@@ -1,0 +1,28 @@
+# Core dependencies
+python-dotenv
+pandas
+
+# PDF processing
+PyMuPDF
+
+# LangChain core
+langchain-core
+langchain-community
+
+# OpenAI
+langchain-openai
+openai
+
+# BM25
+rank_bm25
+
+# Graph retriever
+langchain-graph-retriever
+graph-retriever
+
+# Vector store (choose ONE of the following based on what works):
+langchain-astradb
+
+# Pandas
+pandas
+
