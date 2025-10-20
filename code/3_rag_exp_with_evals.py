@@ -85,6 +85,8 @@ def _read_text(maybe_path: Optional[str]) -> str:
     return p.read_text(encoding="utf-8") if p.exists() else maybe_path
 
 
+# Inspired by https://python.langchain.com/docs/integrations/providers/langfair/
+# Common metrics reported in either `CounterfactualMetrics` or `AutoEval` 
 def langfair_metrics(pred: str, ref: str) -> Dict[str, float | None]:
     """Compute similarity metrics between prediction and reference texts.
        Inspired by the LangFair library but computed by hand as the library
@@ -345,4 +347,3 @@ out = run_experiment(
     out_csv=Path('results/experiment_results.csv'),
     judge_model='gpt-5',
 )
-print(out)
