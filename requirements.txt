@@ -26,3 +26,9 @@ langchain-astradb
 # Pandas
 pandas
 
+# Evaluations
+langsmith
+nltk
+rouge-score
+scikit-learn
+

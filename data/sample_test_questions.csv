@@ -1,0 +1,20 @@
+question,gold_answer
+"How many safety modes does the arm have, and what are the names of each?","The robot arm has three safety modes. Normal mode, reduced mode, and recovery mode. "
+"If my stopping time safety limit is set to 200 ms and the robot stopped in 1000ms, what will happen?",The robot arm will enter recovery mode because te safety limits have been violated. 
+I have just made a modification to the robot arm. Is there any check I need to do afterwards?,"Yes, there is a list of tests to conduct after making a modification to the robot arm. 
+Verify all safety inputs and outputs are correctly connected.
+Test all connected safety input and output, including devices common to multiple
+machines or robots, are functioning as intended.
+Test emergency stop buttons and inputs to verify the robot stops and the brakes engage.
+Test safeguard inputs to verify the robot motion stops. If safeguard reset is configured,
+check that it functions as intended.
+Look at the initialization screen, activate the reduced input and verify the screen changes.
+Change the operational mode to verify the mode icon changes in top right corner of
+PolyScope screen.
+Test the 3-position enabling device to verify that pressing to the center on position enables
+motion in manual mode at a reduced speed.
+If the Emergency Stop outputs are used, press the Emergency Stop push-button and
+verify that there is a stop of the whole system.
+Test the system connected to Robot Moving output, Robot Not Stopping output, Reduced
+Mode output, or Not Reduced Mode output to verify the output changes are detected.
+Determine the commissioning requirements of your robot application."
