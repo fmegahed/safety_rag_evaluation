@@ -332,7 +332,7 @@ def run_experiment(
     return out_csv
 
 
-# Example manual call (uncomment to run directly)
+# Example manual call (need to edit to include all combinations to be tested)
 out = run_experiment(
     test_csv=Path('data/sample_test_questions.csv'),
     approaches=['lc_bm25', 'graph_eager'],
