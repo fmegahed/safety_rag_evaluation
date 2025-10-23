@@ -335,11 +335,11 @@ def run_experiment(
 # Example manual call (need to edit to include all combinations to be tested)
 out = run_experiment(
     test_csv=Path('data/sample_test_questions.csv'),
-    approaches=['lc_bm25', 'graph_eager'],
+    approaches=['openai_keyword', 'openai_semantic', 'lc_bm25', 'graph_eager', 'graph_mmr', 'vanilla'],
     models=['gpt-5-mini-2025-08-07', 'gpt-5-nano-2025-08-07'],
-    max_tokens_list=[1000, 5000],
-    efforts=['minimal', 'high'],
-    topk_list=[5, 10],
+    max_tokens_list=[500, 1000, 2500, 5000],
+    efforts=['minimal', 'low', 'medium', 'high'],
+    topk_list=[3, 5, 7, 10],
     ans_instr_A=_read_text('prompts/ans_instr_A.txt'),
     ans_instr_B=None,
     fewshot_A=_read_text('prompts/fewshot_A.txt'),
