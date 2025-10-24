@@ -234,6 +234,7 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
 def run_experiment(
     *,
     test_csv: Path,
+    num_replicates: int,
     approaches: List[str],
     models: List[str],
     max_tokens_list: List[int],
@@ -247,16 +248,64 @@ def run_experiment(
     max_chars_per_content: int = 25_000,
     judge_model: str = "gpt-5",
 ) -> Path:
-    """Run a full sweep and write results to CSV incrementally.
-
-    `judge_model` controls which LLM evaluates (doc relevance, faithfulness, helpfulness, correctness),
-    independent from the generation models in `models`.
     """
+    Run a full factorial experiment with n replicates and write results to CSV incrementally.
+
+    Each unique configuration in the Cartesian product of:
+      - approach
+      - model
+      - max_tokens
+      - reasoning_effort
+      - top_k
+      - answer_instructions_id in {A, B if provided}
+      - few_shot_id in {A, B if provided}
+    is evaluated for every row in `test_csv`.
+
+    The argument `num_replicates` controls how many times each configuration is repeated.
+    Set this greater than 1 when the LLM or retrieval pipeline is nondeterministic to allow
+    averaging and variance estimation across runs. A `replicate` column is included in the
+    output to differentiate runs, starting at 1.
+
+    Args:
+        test_csv: Path to a CSV with at least columns `question` and `gold_answer`.
+        num_replicates: Number of repeated runs for every configuration and question.
+            Must be >= 1. The output CSV will contain one row per replicate.
+        approaches: Retrieval or orchestration approaches to test.
+        models: Generation model identifiers to test.
+        max_tokens_list: Max generation tokens per configuration.
+        efforts: Reasoning effort settings to try, for example ["minimal", "low", "medium", "high"].
+        topk_list: Values for top-k retrieval to try.
+        ans_instr_A: Required answer instruction template for variant A.
+        ans_instr_B: Optional answer instruction template for variant B. If empty or None, only A is used.
+        fewshot_A: Required few-shot preamble for variant A.
+        fewshot_B: Optional few-shot preamble for variant B. If empty or None, only A is used.
+        out_csv: Destination CSV. File is created if missing and appended to otherwise.
+        max_chars_per_content: Truncation limit for retrieved content fed to the model.
+        judge_model: LLM used for evaluation of doc relevance, faithfulness, helpfulness, and correctness.
+            This is independent from the generation models in `models`.
+
+    Behavior:
+        - The function streams results row by row to `out_csv`. Headers are written only once.
+        - For each replicate, a fresh call to `retrieve_and_answer` and `judge_with_langsmith` is made.
+        - The output CSV includes a `replicate` column to disambiguate repeated runs.
+
+    Returns:
+        Path to `out_csv`.
+
+    Output columns (in addition to metadata from `meta_*`):
+        datetime, min_words_for_subsplit, approach, model, max_tokens, reasoning_effort,
+        top_k, answer_instructions_id, few_shot_id, replicate, question, gold_answer,
+        generated_answer, retrieved_files, cosine, rougeL, bleu, judge_doc_relevance,
+        judge_faithfulness, judge_helpfulness, judge_correctness_vs_ref.
+    """
+    if num_replicates < 1:
+        raise ValueError("num_replicates must be >= 1")
+
     df = pd.read_csv(test_csv)
     assert {"question", "gold_answer"}.issubset(df.columns), "CSV must include question and gold_answer."
 
     out_csv.parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Determine which A/B variants to run based on user inputs
     ai_ids = ["A", "B"] if (ans_instr_B and ans_instr_B.strip()) else ["A"]
     fs_ids = ["A", "B"] if (fewshot_B and fewshot_B.strip()) else ["A"]
@@ -274,76 +323,87 @@ def run_experiment(
             q = str(r["question"]) if pd.notna(r["question"]) else ""
             gold = str(r["gold_answer"]) if pd.notna(r["gold_answer"]) else None
 
-            generated, hits, meta = retrieve_and_answer(
-                question=q,
-                approach=approach,
-                model=model,
-                effort=effort,
-                max_tokens=mtoks,
-                top_k=topk,
-                max_chars_per_content=max_chars_per_content,
-                answer_instructions=ans,
-                few_shot_preamble=fs,
-            )
+            for rep in range(1, int(num_replicates) + 1):
+                generated, hits, meta = retrieve_and_answer(
+                    question=q,
+                    approach=approach,
+                    model=model,
+                    effort=effort,
+                    max_tokens=mtoks,
+                    top_k=topk,
+                    max_chars_per_content=max_chars_per_content,
+                    answer_instructions=ans,
+                    few_shot_preamble=fs,
+                )
 
-            mets = langfair_metrics(generated, gold or "") if gold is not None else {"cosine": None, "rougeL": None, "bleu": None}
+                mets = (
+                    langfair_metrics(generated, gold or "")
+                    if gold is not None
+                    else {"cosine": None, "rougeL": None, "bleu": None}
+                )
 
-            contexts = "".join(h.get("text", "") for h in hits)
-            judges = judge_with_langsmith(
-                question=q,
-                answer=generated,
-                gold=gold,
-                contexts=contexts,
-                judge_model=judge_model,
-            )
+                contexts = "".join(h.get("text", "") for h in hits)
+                judges = judge_with_langsmith(
+                    question=q,
+                    answer=generated,
+                    gold=gold,
+                    contexts=contexts,
+                    judge_model=judge_model,
+                )
 
-            row = {
-                "datetime": now_et(),
-                "min_words_for_subsplit": MIN_WORDS_FOR_SUBSPLIT,
-                "approach": approach,
-                "model": model,
-                "max_tokens": mtoks,
-                "reasoning_effort": effort,
-                "top_k": topk,
-                "answer_instructions_id": ai_id,
-                "few_shot_id": fs_id,
-                "question": q,
-                "gold_answer": gold,
-                "generated_answer": generated,
-                "retrieved_files": ";".join([h.get("filename") or "" for h in hits]),
-                "cosine": mets.get("cosine"),
-                "rougeL": mets.get("rougeL"),
-                "bleu": mets.get("bleu"),
-                "judge_doc_relevance": judges.get("doc_relevance"),
-                "judge_faithfulness": judges.get("faithfulness"),
-                "judge_helpfulness": judges.get("helpfulness"),
-                "judge_correctness_vs_ref": judges.get("correctness_vs_ref"),
-                **{f"meta_{k}": v for k, v in (meta or {}).items()},
-            }
+                row = {
+                    "datetime": now_et(),
+                    "min_words_for_subsplit": MIN_WORDS_FOR_SUBSPLIT,
+                    "approach": approach,
+                    "model": model,
+                    "max_tokens": mtoks,
+                    "reasoning_effort": effort,
+                    "top_k": topk,
+                    "answer_instructions_id": ai_id,
+                    "few_shot_id": fs_id,
+                    "replicate": rep,
+                    "question": q,
+                    "gold_answer": gold,
+                    "generated_answer": generated,
+                    "retrieved_files": ";".join([h.get("filename") or "" for h in hits]),
+                    "cosine": mets.get("cosine"),
+                    "rougeL": mets.get("rougeL"),
+                    "bleu": mets.get("bleu"),
+                    "judge_doc_relevance": judges.get("doc_relevance"),
+                    "judge_faithfulness": judges.get("faithfulness"),
+                    "judge_helpfulness": judges.get("helpfulness"),
+                    "judge_correctness_vs_ref": judges.get("correctness_vs_ref"),
+                    **{f"meta_{k}": v for k, v in (meta or {}).items()},
+                }
 
-            # Append row to CSV
-            (
-                pd.DataFrame([row])
-                .to_csv(out_csv, mode='a', header=write_header, index=False)
-            )
-            write_header = False
+                (
+                    pd.DataFrame([row])
+                    .to_csv(
+                        out_csv,
+                        mode="a",
+                        header=write_header,
+                        index=False,
+                    )
+                )
+                write_header = False
 
-    print(f"✅ Wrote results to {out_csv}")
+    print(f"Wrote results to {out_csv}")
     return out_csv
 
 
-# Example manual call (need to edit to include all combinations to be tested)
+# Example manual call
 out = run_experiment(
-    test_csv=Path('data/sample_test_questions.csv'),
-    approaches=['openai_keyword', 'openai_semantic', 'lc_bm25', 'graph_eager', 'graph_mmr', 'vanilla'],
-    models=['gpt-5-mini-2025-08-07', 'gpt-5-nano-2025-08-07'],
+    test_csv=Path("data/sample_test_questions.csv"),
+    num_replicates=3,
+    approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
+    models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
     max_tokens_list=[500, 1000, 2500, 5000],
-    efforts=['minimal', 'low', 'medium', 'high'],
+    efforts=["minimal", "low", "medium", "high"],
     topk_list=[3, 5, 7, 10],
-    ans_instr_A=_read_text('prompts/ans_instr_A.txt'),
+    ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
     ans_instr_B=None,
-    fewshot_A=_read_text('prompts/fewshot_A.txt'),
+    fewshot_A=_read_text("prompts/fewshot_A.txt"),
     fewshot_B=None,
-    out_csv=Path('results/experiment_results.csv'),
-    judge_model='gpt-5',
+    out_csv=Path("results/experiment_results_with_replicates.csv"),
+    judge_model="gpt-5",
 )
