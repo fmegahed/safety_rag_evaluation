@@ -55,6 +55,7 @@ from rouge_score import rouge_scorer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
+import re
 
 # Download required NLTK data (run once)
 try:
@@ -89,6 +90,13 @@ def _read_text(maybe_path: Optional[str]) -> str:
     p = Path(maybe_path)
     return p.read_text(encoding="utf-8") if p.exists() else maybe_path
 
+def extract_boolean_answer(text: str, prefix_word: str) -> str:
+    if text is None:
+        return None
+    match = re.search(rf"((?<={prefix_word}:\s)|(?<={prefix_word}:))(True|False)", text)
+    if match is None or match.group(0) is None:
+        return None
+    return match.group(0)
 
 # Inspired by https://python.langchain.com/docs/integrations/providers/langfair/
 # Common metrics reported in either `CounterfactualMetrics` or `AutoEval` 
@@ -415,9 +423,13 @@ def run_experiment(
                     "rougeL": mets.get("rougeL"),
                     "bleu": mets.get("bleu"),
                     "judge_doc_relevance": judges.get("doc_relevance"),
+                    "judge_doc_relevance_answer": extract_boolean_answer(judges.get("doc_relevance"), "Relevance"),
                     "judge_faithfulness": judges.get("faithfulness"),
+                    "judge_faithfulness_answer": extract_boolean_answer(judges.get("faithfulness"), "Grounded"),
                     "judge_helpfulness": judges.get("helpfulness"),
+                    "judge_helpfulness_answer": extract_boolean_answer(judges.get("helpfulness"), "Relevance"),
                     "judge_correctness_vs_ref": judges.get("correctness_vs_ref"),
+                    "judge_correctness_vs_ref_answer": extract_boolean_answer(judges.get("correctness_vs_ref"), "Correctness"),
                     **{f"meta_{k}": v for k, v in (meta or {}).items()},
                 }
 
