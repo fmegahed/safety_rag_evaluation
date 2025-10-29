@@ -33,6 +33,7 @@ Usage
 """
 
 from __future__ import annotations
+import time
 
 import requests
 import itertools
@@ -134,6 +135,8 @@ def judge_with_langsmith(
     """Run LLM-as-judge prompts using a specified model.
     Returns a dict of raw model outputs for the four judgments.
     """
+    
+    start = time.time()
     llm = ChatOpenAI(model=judge_model, temperature=0)
     out: Dict[str, Any] = {}
 
@@ -227,6 +230,9 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         )
     else:
         out["correctness_vs_ref"] = None
+
+    elapsed = time.time() - start
+    out["total_elapsed_time"] = f"{elapsed:.2f} Seconds"
 
     return out
 

@@ -23,6 +23,7 @@ import html
 import os
 import pickle
 from pathlib import Path
+import time
 from typing import Any, Dict, List, Tuple
 from zoneinfo import ZoneInfo
 
@@ -287,6 +288,7 @@ def run_rag_router(
     Run one retrieval method, display the model’s answer,
     and save results to a CSV file (append by default).
     """
+    start = time.time()
     client = OpenAI()
     approach = approach.lower().strip()
 
@@ -324,10 +326,13 @@ def run_rag_router(
     print(answer.strip())
     print("\n-----------------------------\n")
 
+    elapsed = time.time() - start
+    
     # Save CSV
     rows = [
         {
             "time": datetime.now(ZoneInfo("America/New_York")).strftime("%Y-%m-%d %H:%M:%S %Z"),
+            "time_taken": f"{elapsed:.2f} Seconds",
             "question": question,
             "approach": approach,
             "filename": h.get("filename"),
