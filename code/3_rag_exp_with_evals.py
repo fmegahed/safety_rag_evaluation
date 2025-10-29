@@ -92,12 +92,11 @@ def _read_text(maybe_path: Optional[str]) -> str:
 
 def extract_boolean_answer(text: str, prefix_word: str) -> str:
     if text is None:
-        return ""
+        return None
     match = re.search(rf"((?<={prefix_word}:\s)|(?<={prefix_word}:))(True|False)", text)
     if match is None or match.group(0) is None:
-        return ""
+        return None
     return match.group(0)
-
 
 # Inspired by https://python.langchain.com/docs/integrations/providers/langfair/
 # Common metrics reported in either `CounterfactualMetrics` or `AutoEval` 
@@ -424,9 +423,13 @@ def run_experiment(
                     "rougeL": mets.get("rougeL"),
                     "bleu": mets.get("bleu"),
                     "judge_doc_relevance": judges.get("doc_relevance"),
+                    "judge_doc_relevance_answer": extract_boolean_answer(judges.get("doc_relevance"), "Relevance"),
                     "judge_faithfulness": judges.get("faithfulness"),
+                    "judge_faithfulness_answer": extract_boolean_answer(judges.get("faithfulness"), "Grounded"),
                     "judge_helpfulness": judges.get("helpfulness"),
+                    "judge_helpfulness_answer": extract_boolean_answer(judges.get("helpfulness"), "Relevance"),
                     "judge_correctness_vs_ref": judges.get("correctness_vs_ref"),
+                    "judge_correctness_vs_ref_answer": extract_boolean_answer(judges.get("correctness_vs_ref"), "Correctness"),
                     **{f"meta_{k}": v for k, v in (meta or {}).items()},
                 }
 
@@ -446,19 +449,18 @@ def run_experiment(
 
 
 # Example manual call
-# out = run_experiment(
-#     test_csv=Path("data/sample_test_questions.csv"),
-#     num_replicates=3,
-#     approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
-#     models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
-#     max_tokens_list=[500, 1000, 2500, 5000],
-#     efforts=["minimal", "low", "medium", "high"],
-#     topk_list=[3, 5, 7, 10],
-#     ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
-#     ans_instr_B=None,
-#     fewshot_A=_read_text("prompts/fewshot_A.txt"),
-#     fewshot_B=None,
-#     out_csv=Path("results/experiment_results_with_replicates.csv"),
-#     judge_model="gpt-5",
-# )
-
+out = run_experiment(
+    test_csv=Path("data/sample_test_questions.csv"),
+    num_replicates=3,
+    approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
+    models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
+    max_tokens_list=[500, 1000, 2500, 5000],
+    efforts=["minimal", "low", "medium", "high"],
+    topk_list=[3, 5, 7, 10],
+    ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+    ans_instr_B=None,
+    fewshot_A=_read_text("prompts/fewshot_A.txt"),
+    fewshot_B=None,
+    out_csv=Path("results/experiment_results_with_replicates.csv"),
+    judge_model="gpt-5",
+)
