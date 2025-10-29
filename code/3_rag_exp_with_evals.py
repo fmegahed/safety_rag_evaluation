@@ -55,6 +55,7 @@ from rouge_score import rouge_scorer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
+import re
 
 # Download required NLTK data (run once)
 try:
@@ -88,6 +89,14 @@ def _read_text(maybe_path: Optional[str]) -> str:
         return ""
     p = Path(maybe_path)
     return p.read_text(encoding="utf-8") if p.exists() else maybe_path
+
+def extract_boolean_answer(text: str, prefix_word: str) -> str:
+    if text is None:
+        return ""
+    match = re.search(rf"((?<={prefix_word}:\s)|(?<={prefix_word}:))(True|False)", text)
+    if match is None or match.group(0) is None:
+        return ""
+    return match.group(0)
 
 
 # Inspired by https://python.langchain.com/docs/integrations/providers/langfair/
@@ -437,18 +446,19 @@ def run_experiment(
 
 
 # Example manual call
-out = run_experiment(
-    test_csv=Path("data/sample_test_questions.csv"),
-    num_replicates=3,
-    approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
-    models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
-    max_tokens_list=[500, 1000, 2500, 5000],
-    efforts=["minimal", "low", "medium", "high"],
-    topk_list=[3, 5, 7, 10],
-    ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
-    ans_instr_B=None,
-    fewshot_A=_read_text("prompts/fewshot_A.txt"),
-    fewshot_B=None,
-    out_csv=Path("results/experiment_results_with_replicates.csv"),
-    judge_model="gpt-5",
-)
+# out = run_experiment(
+#     test_csv=Path("data/sample_test_questions.csv"),
+#     num_replicates=3,
+#     approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
+#     models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
+#     max_tokens_list=[500, 1000, 2500, 5000],
+#     efforts=["minimal", "low", "medium", "high"],
+#     topk_list=[3, 5, 7, 10],
+#     ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+#     ans_instr_B=None,
+#     fewshot_A=_read_text("prompts/fewshot_A.txt"),
+#     fewshot_B=None,
+#     out_csv=Path("results/experiment_results_with_replicates.csv"),
+#     judge_model="gpt-5",
+# )
+
