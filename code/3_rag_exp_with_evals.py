@@ -33,6 +33,7 @@ Usage
 """
 
 from __future__ import annotations
+import time
 
 import requests
 import itertools
@@ -60,6 +61,10 @@ try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt')
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
 
 # Load .env so API keys and endpoints are available everywhere
 load_dotenv(override=True)
@@ -134,6 +139,8 @@ def judge_with_langsmith(
     """Run LLM-as-judge prompts using a specified model.
     Returns a dict of raw model outputs for the four judgments.
     """
+    
+    start = time.time()
     llm = ChatOpenAI(model=judge_model, temperature=0)
     out: Dict[str, Any] = {}
 
@@ -228,6 +235,9 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
     else:
         out["correctness_vs_ref"] = None
 
+    elapsed = time.time() - start
+    out["total_elapsed_time"] = f"{elapsed:.2f} Seconds"
+
     return out
 
 
@@ -312,7 +322,30 @@ def run_experiment(
 
     # Track if we need to write headers
     write_header = not out_csv.exists()
-
+    total_loop_count = (
+        len(approaches)
+        * len(models)
+        * len(max_tokens_list)
+        * len(efforts)
+        * len(topk_list)
+        * len(ai_ids)
+        * len(fs_ids)
+        * len(df)                   
+        * int(num_replicates)
+    )
+    index = 0
+    
+    print("Loop dimensions:")
+    print(f"approaches      = {len(approaches)}")
+    print(f"models          = {len(models)}")
+    print(f"max_tokens_list = {len(max_tokens_list)}")
+    print(f"efforts         = {len(efforts)}")
+    print(f"topk_list       = {len(topk_list)}")
+    print(f"ai_ids          = {len(ai_ids)}")
+    print(f"fs_ids          = {len(fs_ids)}")
+    print(f"df rows         = {len(df)}")
+    print(f"replicates      = {int(num_replicates)}")
+    
     for approach, model, mtoks, effort, topk, ai_id, fs_id in itertools.product(
         approaches, models, max_tokens_list, efforts, topk_list, ai_ids, fs_ids,
     ):
@@ -324,6 +357,9 @@ def run_experiment(
             gold = str(r["gold_answer"]) if pd.notna(r["gold_answer"]) else None
 
             for rep in range(1, int(num_replicates) + 1):
+                index += 1
+                print(f"On Pass {index} / {total_loop_count}")
+                generate_answer_start = time.time()
                 generated, hits, meta = retrieve_and_answer(
                     question=q,
                     approach=approach,
@@ -335,14 +371,18 @@ def run_experiment(
                     answer_instructions=ans,
                     few_shot_preamble=fs,
                 )
-
+                generate_answer_start_elapsed = time.time() - generate_answer_start
+                
+                metrics_start = time.time()
                 mets = (
                     langfair_metrics(generated, gold or "")
                     if gold is not None
                     else {"cosine": None, "rougeL": None, "bleu": None}
                 )
+                metrics_elapsed = time.time() - metrics_start
 
                 contexts = "".join(h.get("text", "") for h in hits)
+                judge_start = time.time()
                 judges = judge_with_langsmith(
                     question=q,
                     answer=generated,
@@ -350,9 +390,14 @@ def run_experiment(
                     contexts=contexts,
                     judge_model=judge_model,
                 )
-
+                judge_elapsed = time.time() - judge_start
+                total_elapsed = generate_answer_start_elapsed + metrics_elapsed + judge_elapsed
                 row = {
                     "datetime": now_et(),
+                    "generate_elapsed_time": f"{generate_answer_start_elapsed:.2f} Seconds",
+                    "metrics_elapsed_time": f"{metrics_elapsed:.2f} Seconds",
+                    "judge_elapsed_time": f"{judge_elapsed:.2f} Seconds",
+                    "total_elapsed_time": f"{total_elapsed:.2f} Seconds",
                     "min_words_for_subsplit": MIN_WORDS_FOR_SUBSPLIT,
                     "approach": approach,
                     "model": model,
