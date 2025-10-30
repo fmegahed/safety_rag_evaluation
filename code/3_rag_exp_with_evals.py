@@ -46,7 +46,9 @@ from dotenv import load_dotenv
 
 from langsmith import traceable
 
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel
 from langchain_openai import ChatOpenAI
 
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
@@ -135,7 +137,6 @@ def judge_with_langsmith(
     Returns a dict of raw model outputs for the four judgments.
     """
     llm = ChatOpenAI(model=judge_model, temperature=0)
-    out: Dict[str, Any] = {}
 
     # Document relevance
     retrieval_relevance_instructions = """You are a teacher grading a quiz. You will be given a QUESTION and a set of FACTS provided by the student. Here is the grade criteria to follow:
@@ -153,12 +154,7 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         ("system", retrieval_relevance_instructions),
         ("user", "FACTS: {contexts}\nQUESTION: {question}")
     ])
-    out["doc_relevance"] = (
-        doc_rel_prompt
-        .pipe(llm)
-        .invoke({"question": question, "contexts": contexts})
-        .content
-    )
+    doc_rel_chain = doc_rel_prompt | llm | StrOutputParser()
 
     # Faithfulness (groundedness/hallucination check)
     grounded_instructions = """You are a teacher grading a quiz. You will be given FACTS and a STUDENT ANSWER. Here is the grade criteria to follow:
@@ -174,12 +170,7 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         ("system", grounded_instructions),
         ("user", "FACTS: {contexts}\nSTUDENT ANSWER: {answer}")
     ])
-    out["faithfulness"] = (
-        faithful_prompt
-        .pipe(llm)
-        .invoke({"answer": answer, "contexts": contexts})
-        .content
-    )
+    faithful_chain = faithful_prompt | llm | StrOutputParser()
 
     # Helpfulness (relevance)
     relevance_instructions = """You are a teacher grading a quiz. You will be given a QUESTION and a STUDENT ANSWER. Here is the grade criteria to follow:
@@ -196,12 +187,13 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         ("system", relevance_instructions),
         ("user", "QUESTION: {question}\nSTUDENT ANSWER: {answer}")
     ])
-    out["helpfulness"] = (
-        helpful_prompt
-        .pipe(llm)
-        .invoke({"question": question, "answer": answer})
-        .content
-    )
+    helpful_chain = helpful_prompt | llm | StrOutputParser()
+
+    chains: Dict[str, Any] = {
+        "doc_relevance": doc_rel_chain,
+        "faithfulness": faithful_chain,
+        "helpfulness": helpful_chain,
+    }
 
     # Correctness vs reference
     if gold is not None and len(gold.strip()) > 0:
@@ -219,16 +211,21 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
             ("system", correctness_instructions),
             ("user", "QUESTION: {question}\nGROUND TRUTH ANSWER: {reference}\nSTUDENT ANSWER: {answer}")
         ])
-        out["correctness_vs_ref"] = (
-            correct_prompt
-            .pipe(llm)
-            .invoke({"question": question, "answer": answer, "reference": gold})
-            .content
-        )
-    else:
-        out["correctness_vs_ref"] = None
+        chains["correctness_vs_ref"] = correct_prompt | llm | StrOutputParser()
 
-    return out
+    parallel = RunnableParallel(**chains)
+    inputs = {
+        "question": question,
+        "answer": answer,
+        "reference": gold,
+        "contexts": contexts,
+    }
+    results = parallel.invoke(inputs)
+
+    if "correctness_vs_ref" not in results:
+        results["correctness_vs_ref"] = None
+
+    return results
 
 
 def run_experiment(
@@ -395,15 +392,15 @@ def run_experiment(
 out = run_experiment(
     test_csv=Path("data/sample_test_questions.csv"),
     num_replicates=3,
-    approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
-    models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
-    max_tokens_list=[500, 1000, 2500, 5000],
-    efforts=["minimal", "low", "medium", "high"],
-    topk_list=[3, 5, 7, 10],
+    approaches=["openai_keyword"],
+    models=["gpt-5-mini-2025-08-07"],
+    max_tokens_list=[250],
+    efforts=["low"],
+    topk_list=[10],
     ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
     ans_instr_B=None,
     fewshot_A=_read_text("prompts/fewshot_A.txt"),
     fewshot_B=None,
-    out_csv=Path("results/experiment_results_with_replicates.csv"),
+    out_csv=Path("results/experiment_results_with_replicates_parrallel.csv"),
     judge_model="gpt-5",
 )
