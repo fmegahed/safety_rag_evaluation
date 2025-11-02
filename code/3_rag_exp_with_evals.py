@@ -150,7 +150,6 @@ def judge_with_langsmith(
     Returns a dict of raw model outputs for the four judgments.
     """
     
-    start = time.time()
     llm = ChatOpenAI(model=judge_model, temperature=0)
 
     # Document relevance
@@ -239,9 +238,6 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
 
     if "correctness_vs_ref" not in results:
         results["correctness_vs_ref"] = None
-
-    elapsed = time.time() - start
-    out["total_elapsed_time"] = f"{elapsed:.2f} Seconds"
     
     return results
 
