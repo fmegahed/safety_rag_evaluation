@@ -58,6 +58,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 import re
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 # Download required NLTK data (run once)
 try:
@@ -73,9 +75,11 @@ except LookupError:
 load_dotenv(override=True)
 
 # Import the function from file 2 (which should expose retrieve_and_answer and be import-safe)
-response = requests.get("https://raw.githubusercontent.com/fmegahed/safety_rag_evaluation/refs/heads/main/code/2_rag.py")
+# response = requests.get("https://raw.githubusercontent.com/fmegahed/safety_rag_evaluation/refs/heads/main/code/2_rag.py")
 namespace = {}
-exec(response.text, namespace)
+with open("code/2_rag.py") as f:
+    exec(f.read(), namespace)
+# exec(response.text, namespace)
 retrieve_and_answer = namespace["retrieve_and_answer"]
 
 # Provenance value from file 0
@@ -241,6 +245,135 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
     
     return results
 
+async def run_experiment_async(
+    *,
+    test_csv: Path,
+    num_replicates: int,
+    approaches: List[str],
+    models: List[str],
+    max_tokens_list: List[int],
+    efforts: List[str],
+    topk_list: List[int],
+    ans_instr_A: str,
+    ans_instr_B: Optional[str],
+    fewshot_A: str,
+    fewshot_B: Optional[str],
+    out_csv: Path,
+    max_concurrent: int = 5,
+    max_chars_per_content: int = 25_000,
+    judge_model: str = "gpt-5",
+) -> Path:
+    """
+    Parallel version of run_experiment with concurrency control.
+    Processes up to `max_concurrent` questions/configurations simultaneously.
+    """
+    if num_replicates < 1:
+        raise ValueError("num_replicates must be >= 1")
+
+    df = pd.read_csv(test_csv)
+    assert {"question", "gold_answer"}.issubset(df.columns), "CSV must include question and gold_answer."
+
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    write_header = not out_csv.exists()
+
+    ai_ids = ["A", "B"] if (ans_instr_B and ans_instr_B.strip()) else ["A"]
+    fs_ids = ["A", "B"] if (fewshot_B and fewshot_B.strip()) else ["A"]
+
+    # Prevents main thread blocking
+    loop = asyncio.get_event_loop()
+    executor = ThreadPoolExecutor(max_workers=max_concurrent)
+
+    async def process_one(q: str, gold: str, approach: str, model: str, mtoks: int, effort: str,
+                          topk: int, ai_id: str, fs_id: str, rep: int):
+        """Run one retrieval + eval combo asynchronously."""
+        def sync_task():
+            ans = ans_instr_A if ai_id == "A" else (ans_instr_B or "")
+            fs = fewshot_A if fs_id == "A" else (fewshot_B or "")
+            start = time.time()
+            generated, hits, meta = retrieve_and_answer(
+                question=q,
+                approach=approach,
+                model=model,
+                effort=effort,
+                max_tokens=mtoks,
+                top_k=topk,
+                max_chars_per_content=max_chars_per_content,
+                answer_instructions=ans,
+                few_shot_preamble=fs,
+            )
+            elapsed_gen = time.time() - start
+
+            mets = langfair_metrics(generated, gold or "") if gold else {"cosine": None, "rougeL": None, "bleu": None}
+            contexts = "".join(h.get("text", "") for h in hits)
+
+            start_judge = time.time()
+            judges = judge_with_langsmith(
+                question=q,
+                answer=generated,
+                gold=gold,
+                contexts=contexts,
+                judge_model=judge_model,
+            )
+            elapsed_judge = time.time() - start_judge
+            total_elapsed = elapsed_gen + elapsed_judge
+
+            row = {
+                "datetime": now_et(),
+                "generate_elapsed_time": f"{elapsed_gen:.2f} Seconds",
+                "judge_elapsed_time": f"{elapsed_judge:.2f} Seconds",
+                "total_elapsed_time": f"{total_elapsed:.2f} Seconds",
+                "min_words_for_subsplit": MIN_WORDS_FOR_SUBSPLIT,
+                "approach": approach,
+                "model": model,
+                "max_tokens": mtoks,
+                "reasoning_effort": effort,
+                "top_k": topk,
+                "answer_instructions_id": ai_id,
+                "few_shot_id": fs_id,
+                "replicate": rep,
+                "question": q,
+                "gold_answer": gold,
+                "generated_answer": generated,
+                "retrieved_files": ";".join([h.get("filename") or "" for h in hits]),
+                "cosine": mets.get("cosine"),
+                "rougeL": mets.get("rougeL"),
+                "bleu": mets.get("bleu"),
+                "judge_doc_relevance": judges.get("doc_relevance"),
+                "judge_doc_relevance_answer": extract_boolean_answer(judges.get("doc_relevance"), "Relevance"),
+                "judge_faithfulness": judges.get("faithfulness"),
+                "judge_faithfulness_answer": extract_boolean_answer(judges.get("faithfulness"), "Grounded"),
+                "judge_helpfulness": judges.get("helpfulness"),
+                "judge_helpfulness_answer": extract_boolean_answer(judges.get("helpfulness"), "Relevance"),
+                "judge_correctness_vs_ref": judges.get("correctness_vs_ref"),
+                "judge_correctness_vs_ref_answer": extract_boolean_answer(judges.get("correctness_vs_ref"), "Correctness"),
+                **{f"meta_{k}": v for k, v in (meta or {}).items()},
+            }
+            return row
+
+        return await loop.run_in_executor(executor, sync_task)
+
+    index = 0
+    for approach, model, mtoks, effort, topk, ai_id, fs_id in itertools.product(
+        approaches, models, max_tokens_list, efforts, topk_list, ai_ids, fs_ids,
+    ):
+        tasks = []
+        for _, r in df.iterrows():
+            q = str(r["question"]) if pd.notna(r["question"]) else ""
+            gold = str(r["gold_answer"]) if pd.notna(r["gold_answer"]) else None
+            for rep in range(1, int(num_replicates) + 1):
+                tasks.append(process_one(q, gold, approach, model, mtoks, effort, topk, ai_id, fs_id, rep))
+
+        # Run in batches of max_concurrent
+        for i in range(0, len(tasks), max_concurrent):
+            batch = tasks[i:i + max_concurrent]
+            results = await asyncio.gather(*batch)
+            pd.DataFrame(results).to_csv(out_csv, mode="a", header=write_header, index=False)
+            write_header = False
+            index += len(batch)
+            print(f"Completed {index} runs for approach={approach}, model={model}")
+
+    print(f"\nAll results written to {out_csv}")
+    return out_csv
 
 
 def run_experiment(
@@ -443,18 +576,34 @@ def run_experiment(
 
 
 # Example manual call
-out = run_experiment(
-    test_csv=Path("data/sample_test_questions.csv"),
-    num_replicates=3,
-    approaches=["openai_keyword"],
-    models=["gpt-5-mini-2025-08-07"],
-    max_tokens_list=[250],
-    efforts=["low"],
-    topk_list=[10],
-    ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
-    ans_instr_B=None,
-    fewshot_A=_read_text("prompts/fewshot_A.txt"),
-    fewshot_B=None,
-    out_csv=Path("results/experiment_results_with_replicates_parrallel.csv"),
-    judge_model="gpt-5",
-)
+# out = run_experiment(
+#     test_csv=Path("data/sample_test_questions.csv"),
+#     num_replicates=3,
+#     approaches=["openai_keyword"],
+#     models=["gpt-5-mini-2025-08-07"],
+#     max_tokens_list=[250],
+#     efforts=["low"],
+#     topk_list=[10],
+#     ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+#     ans_instr_B=None,
+#     fewshot_A=_read_text("prompts/fewshot_A.txt"),
+#     fewshot_B=None,
+#     out_csv=Path("results/experiment_results_with_replicates_parrallel.csv"),
+#     judge_model="gpt-5",
+# )
+
+asyncio.run(run_experiment_async(
+        test_csv=Path("data/sample_test_questions.csv"),
+        num_replicates=3,
+        approaches=["openai_keyword"],
+        models=["gpt-5-mini-2025-08-07"],
+        max_tokens_list=[250],
+        efforts=["low"],
+        topk_list=[10],
+        ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+        ans_instr_B=None,
+        fewshot_A=_read_text("prompts/fewshot_A.txt"),
+        fewshot_B=None,
+        out_csv=Path("results/parallel_experiment.csv"),
+        max_concurrent=5,
+    ))

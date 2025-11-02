@@ -39,6 +39,8 @@ from langchain_astradb import AstraDBVectorStore
 from langchain_graph_retriever import GraphRetriever
 from graph_retriever.strategies import Eager, Mmr
 
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 # -------------------------------------------------------------------
 # Config (identical to 1_preprocess.py)
@@ -410,17 +412,156 @@ def retrieve_and_answer(
     return answer, hits, meta
 
 
+
+async def run_rag_router_async(
+    questions: list[str],
+    *,
+    approach: str,
+    batch_size: int = 5,
+    csv_path: str = "results/rag_results.csv",
+    append: bool = True,
+    model: str = CONFIG["model"],
+    effort: str = CONFIG["reasoning_effort"],
+    max_tokens: int = CONFIG["max_tokens"],
+    top_k: int = CONFIG["top_k"],
+    max_chars_per_content: int = CONFIG["max_chars_per_content"],
+    answer_instructions: str = DEFAULT_ANSWER_INSTRUCTIONS,
+    few_shot_preamble: str = DEFAULT_FEW_SHOT_PREAMBLE,
+):
+    """
+    Run multiple RAG queries concurrently in batches.
+
+    Args:
+        questions: List of questions to run.
+        batch_size: Number of concurrent queries to run.
+    """
+    client = OpenAI()
+
+    async def process_question(question: str):
+        loop = asyncio.get_event_loop()
+        # Run sync retrieval and model query in executor to avoid blocking event loop
+        def sync_task():
+            start_hit = time.time()
+            # Retrieve step
+            if approach == "openai_semantic":
+                hits = _retrieve_openai_file_search(client, question=question, top_k=top_k, rewrite_query=True)
+            elif approach == "openai_keyword":
+                hits = _retrieve_openai_file_search(client, question=question, top_k=top_k, rewrite_query=False)
+            elif approach == "lc_bm25":
+                hits = _retrieve_langchain_bm25(question=question, top_k=top_k)
+            elif approach == "graph_eager":
+                hits = _retrieve_graph_retriever(question=question, top_k=top_k, strategy="EAGER")
+            elif approach == "graph_mmr":
+                hits = _retrieve_graph_retriever(question=question, top_k=top_k, strategy="MMR")
+            elif approach == "vanilla":
+                hits = _retrieve_vanilla_astradb(question=question, top_k=top_k)
+            else:
+                raise ValueError(f"Unknown approach '{approach}'.")
+            elapsed_hit = time.time() - start_hit
+
+            # Ask model
+            start_ask = time.time()
+            answer, meta = _ask_with_sources(
+                client,
+                question=question,
+                hits=hits,
+                model=model,
+                effort=effort,
+                max_tokens=max_tokens,
+                answer_instructions=answer_instructions,
+                few_shot_preamble=few_shot_preamble,
+                max_chars_per_content=max_chars_per_content,
+            )
+            elapsed_ask = time.time() - start_ask
+
+            # Return structured row(s)
+            rows = [
+                {
+                    "time": datetime.now(ZoneInfo("America/New_York")).strftime("%Y-%m-%d %H:%M:%S %Z"),
+                    "time_taken_retriever": f"{elapsed_hit:.2f} Seconds",
+                    "time_taken_llm_section": f"{elapsed_ask:.2f} Seconds",
+                    "question": question,
+                    "approach": approach,
+                    "filename": h.get("filename"),
+                    "file_id": h.get("file_id"),
+                    "score": h.get("score"),
+                    "snippet": (h.get("text") or "")[:200].replace("\n", " "),
+                    "answer": answer,
+                    **meta,
+                }
+                for h in hits
+            ]
+            return rows, answer
+
+        rows, answer = await loop.run_in_executor(None, sync_task)
+        print(f"\n--- {approach.upper()} ANSWER for '{question}' ---\n{answer.strip()}\n-----------------------------\n")
+        return rows
+
+        # Collect all rows
+    all_rows: list[dict] = []
+    with ThreadPoolExecutor(max_workers=batch_size):
+        for i in range(0, len(questions), batch_size):
+            batch = questions[i:i+batch_size]
+            results = await asyncio.gather(*[process_question(q) for q in batch])
+            for rows in results:
+                all_rows.extend(rows)  # rows is already a list[dict]
+
+    # Save combined CSV
+    df = pd.DataFrame(all_rows)
+    out_path = Path(csv_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if append and out_path.exists():
+        existing = pd.read_csv(out_path)
+        combined = pd.concat([existing, df], ignore_index=True)
+        combined.to_csv(out_path, index=False)
+    else:
+        df.to_csv(out_path, index=False)
+
+    print(f"✅ All results saved to {out_path.resolve()}")
+
+
+
+
+
 # -------------------------------------------------------------------
 # Optional demo: only runs if this file is executed directly
 # -------------------------------------------------------------------
 if __name__ == "__main__":
-    run_rag_router(
-        question="What are the safety functions for a UR5e?",
-        # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    # run_rag_router(
+    #     question="What are the safety functions for a UR5e?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="lc_bm25",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )    
+    # run_rag_router(
+    #     question="How do I safely calibrate a UR5e robot?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="lc_bm25",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )    
+    # run_rag_router(
+    #     question="What should I check before jogging the robot?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="lc_bm25",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )
+    
+    questions = [
+        "What are the safety functions for a UR5e?",
+        "How do I safely calibrate a UR5e robot?",
+        "What should I check before jogging the robot?",
+    ]
+    
+    asyncio.run(run_rag_router_async(
+        questions,
         approach="lc_bm25",
-        csv_path="results/rag_results.csv",
-        append=True,
-    )
+        batch_size=3,
+        csv_path="results/rag_batch_results.csv",
+    ))
     
     # run_rag_router(
     #     question="What are the safety functions for a UR5e?",
