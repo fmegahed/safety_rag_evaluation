@@ -23,6 +23,7 @@ import html
 import os
 import pickle
 from pathlib import Path
+import time
 from typing import Any, Dict, List, Tuple
 from zoneinfo import ZoneInfo
 
@@ -289,7 +290,7 @@ def run_rag_router(
     """
     client = OpenAI()
     approach = approach.lower().strip()
-
+    start_hit = time.time()
     # Retrieve based on approach type
     if approach == "openai_semantic":
         hits = _retrieve_openai_file_search(client, question=question, top_k=top_k, rewrite_query=True)
@@ -305,8 +306,9 @@ def run_rag_router(
         hits = _retrieve_vanilla_astradb(question=question, top_k=top_k)
     else:
         raise ValueError(f"Unknown approach '{approach}'.")
-
+    elapsed_hit = time.time() - start_hit
     # Ask the model
+    start_ask = time.time()
     answer, meta = _ask_with_sources(
         client,
         question=question,
@@ -318,16 +320,19 @@ def run_rag_router(
         few_shot_preamble=few_shot_preamble,
         max_chars_per_content=max_chars_per_content,
     )
+    elapsed_ask = time.time() - start_ask
 
     # Display answer
     print(f"\n--- {approach.upper()} ANSWER ---\n")
     print(answer.strip())
     print("\n-----------------------------\n")
-
+    
     # Save CSV
     rows = [
         {
             "time": datetime.now(ZoneInfo("America/New_York")).strftime("%Y-%m-%d %H:%M:%S %Z"),
+            "time_taken_retriever": f"{elapsed_hit:.2f} Seconds",
+            "time_taken_llm_section": f"{elapsed_ask:.2f} Seconds",
             "question": question,
             "approach": approach,
             "filename": h.get("filename"),
@@ -339,6 +344,7 @@ def run_rag_router(
         }
         for h in hits
     ]
+    
     df = pd.DataFrame(rows)
     out_path = Path(csv_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -415,3 +421,43 @@ if __name__ == "__main__":
         csv_path="results/rag_results.csv",
         append=True,
     )
+    
+    # run_rag_router(
+    #     question="What are the safety functions for a UR5e?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="openai_semantic",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )
+    
+    # run_rag_router(
+    #     question="What are the safety functions for a UR5e?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="openai_keyword",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )
+
+    # run_rag_router(
+    #     question="What are the safety functions for a UR5e?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="graph_eager",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )
+    
+    # run_rag_router(
+    #     question="What are the safety functions for a UR5e?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="vanilla",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )
+    # run_rag_router(
+    #     question="What are the safety functions for a UR5e?",
+    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
+    #     approach="graph_mmr",
+    #     csv_path="results/rag_results.csv",
+    #     append=True,
+    # )
+
