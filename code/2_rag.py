@@ -532,77 +532,25 @@ async def run_rag_router_async(
 # Optional demo: only runs if this file is executed directly
 # -------------------------------------------------------------------
 if __name__ == "__main__":
-    # run_rag_router(
-    #     question="What are the safety functions for a UR5e?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="lc_bm25",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )    
-    # run_rag_router(
-    #     question="How do I safely calibrate a UR5e robot?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="lc_bm25",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )    
-    # run_rag_router(
-    #     question="What should I check before jogging the robot?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="lc_bm25",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )
-    
-    questions = [
-        "What are the safety functions for a UR5e?",
-        "How do I safely calibrate a UR5e robot?",
-        "What should I check before jogging the robot?",
-    ]
-    
-    asyncio.run(run_rag_router_async(
-        questions,
+    run_rag_router(
+        question="What are the safety functions for a UR5e?",
+        # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
         approach="lc_bm25",
-        batch_size=3,
-        csv_path="results/rag_batch_results.csv",
-    ))
+        csv_path="results/rag_results.csv",
+        append=True,
+    )    
     
-    # run_rag_router(
-    #     question="What are the safety functions for a UR5e?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="openai_semantic",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )
+    # questions = [
+    #     "What are the safety functions for a UR5e?",
+    #     "How do I safely calibrate a UR5e robot?",
+    #     "What should I check before jogging the robot?",
+    # ]
     
-    # run_rag_router(
-    #     question="What are the safety functions for a UR5e?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="openai_keyword",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )
-
-    # run_rag_router(
-    #     question="What are the safety functions for a UR5e?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="graph_eager",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )
+    # asyncio.run(run_rag_router_async(
+    #     questions,
+    #     approach="lc_bm25",
+    #     batch_size=3,
+    #     csv_path="results/rag_batch_results.csv",
+    # ))
     
-    # run_rag_router(
-    #     question="What are the safety functions for a UR5e?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="vanilla",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )
-    # run_rag_router(
-    #     question="What are the safety functions for a UR5e?",
-    #     # approach can be: "openai_semantic", "openai_keyword", "lc_bm25", "graph_mmr", "graph_eager", "vanilla"
-    #     approach="graph_mmr",
-    #     csv_path="results/rag_results.csv",
-    #     append=True,
-    # )
 

@@ -35,7 +35,6 @@ Usage
 from __future__ import annotations
 import time
 
-import requests
 import itertools
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -58,8 +57,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 import re
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 
 # Download required NLTK data (run once)
 try:

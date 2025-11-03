@@ -1,35 +1,5 @@
 """
-Minimal experiment runner for the UR5e RAG system.
-
-How this file operates
-----------------------
-• Assumes you already ran file 0 (PDF split/crop with MIN_WORDS_FOR_SUBSPLIT=3000) and file 1 (build BM25 pickle and Astra collection). It does not redo preprocessing.
-• Imports a small helper from file 2 (`retrieve_and_answer`) to avoid duplicating logic. That helper returns (answer, hits, meta) for a given question and config.
-• Sweeps experimental factors (approach, model, max_tokens, reasoning_effort, top_k, A/B answer instructions, A/B few-shot preambles) and evaluates each run.
-• If the user omits B-variants (`--answer_instructions_b` or `--fewshot_b`), only A-variants are run.
-• Computes automated similarity metrics using LangFair (Cosine, RougeL, Bleu).
-• Uses LangSmith prompt packs (LLM-as-judge) for document relevance, faithfulness, helpfulness, and correctness-vs-reference.
-• Lets you pick a separate **judge_model** for LLM-as-judge (default: `gpt-5`) independent of generation models.
-• Writes a tidy CSV with one row per (question × configuration × approach) including datetime, all factor values, the generated answer, retrieved filenames, metrics, and judge outputs.
-
-Inputs
-------
-• `--test_csv` a CSV with columns: question, gold_answer
-• `--answer_instructions_a`, `--answer_instructions_b` Either a path to a file OR a literal text string (B is optional)
-• `--fewshot_a`, `--fewshot_b` Either a path to a file OR a literal text string (B is optional)
-
-Environment
------------
-Loads `.env` automatically. Expected keys:
-• OPENAI_API_KEY
-• LANGSMITH_API_KEY
-• For AstraDB approaches (graph_eager, graph_mmr, vanilla): ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN
-• For OpenAI vector store approaches (openai_semantic, openai_keyword): OPENAI_VECTOR_STORE_ID
-
-Usage
------
-# Import and call run_experiment() directly
-# Example minimal call at the bottom of this file.
+RAG generation step
 """
 
 from __future__ import annotations

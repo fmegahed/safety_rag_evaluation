@@ -1,48 +1,11 @@
 """
-Minimal experiment runner for the UR5e RAG system.
-
-How this file operates
-----------------------
-• Assumes you already ran file 0 (PDF split/crop with MIN_WORDS_FOR_SUBSPLIT=3000) and file 1 (build BM25 pickle and Astra collection). It does not redo preprocessing.
-• Imports a small helper from file 2 (`retrieve_and_answer`) to avoid duplicating logic. That helper returns (answer, hits, meta) for a given question and config.
-• Sweeps experimental factors (approach, model, max_tokens, reasoning_effort, top_k, A/B answer instructions, A/B few-shot preambles) and evaluates each run.
-• If the user omits B-variants (`--answer_instructions_b` or `--fewshot_b`), only A-variants are run.
-• Computes automated similarity metrics using LangFair (Cosine, RougeL, Bleu).
-• Uses LangSmith prompt packs (LLM-as-judge) for document relevance, faithfulness, helpfulness, and correctness-vs-reference.
-• Lets you pick a separate **judge_model** for LLM-as-judge (default: `gpt-5`) independent of generation models.
-• Writes a tidy CSV with one row per (question × configuration × approach) including datetime, all factor values, the generated answer, retrieved filenames, metrics, and judge outputs.
-
-Inputs
-------
-• `--test_csv` a CSV with columns: question, gold_answer
-• `--answer_instructions_a`, `--answer_instructions_b` Either a path to a file OR a literal text string (B is optional)
-• `--fewshot_a`, `--fewshot_b` Either a path to a file OR a literal text string (B is optional)
-
-Environment
------------
-Loads `.env` automatically. Expected keys:
-• OPENAI_API_KEY
-• LANGSMITH_API_KEY
-• For AstraDB approaches (graph_eager, graph_mmr, vanilla): ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN
-• For OpenAI vector store approaches (openai_semantic, openai_keyword): OPENAI_VECTOR_STORE_ID
-
-Usage
------
-# Import and call run_experiment() directly
-# Example minimal call at the bottom of this file.
+Calculates the langfair metrics from an existing csv and exports to a new one
 """
 
 from __future__ import annotations
-import time
-
-import itertools
 from pathlib import Path
-from typing import Dict, List, Optional
-from zoneinfo import ZoneInfo
-
-from datetime import datetime
+from typing import Dict
 import pandas as pd
-from dotenv import load_dotenv
 
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from rouge_score import rouge_scorer
@@ -51,7 +14,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-
 # Download required NLTK data (run once)
 try:
     nltk.data.find('tokenizers/punkt')
@@ -96,13 +58,6 @@ def langfair_metrics(pred: str, ref: str) -> Dict[str, float | None]:
         "bleu": float(bleu) if bleu is not None else None,
     }
 
-
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-import pandas as pd
-from datetime import datetime
-
 async def run_local_math(
     *,
     q_a_csv: Path,
@@ -114,7 +69,7 @@ async def run_local_math(
     append the metrics as new columns, and write to a new CSV file.
 
     Args:
-        math_csv: Input CSV containing at least 'generated_answer' and 'gold_answer' columns.
+        q_a_csv: Input CSV containing at least 'generated_answer' and 'gold_answer' columns.
         out_csv: Output CSV path. If None, saves as '<input>_with_metrics.csv' next to input.
         max_concurrent: Number of rows to process concurrently.
 
@@ -175,5 +130,5 @@ async def run_local_math(
 
 asyncio.run(run_local_math(
     q_a_csv=Path("results/rag_generation.csv"),
-    max_concurrent=999,
+    max_concurrent=20,
 ))
