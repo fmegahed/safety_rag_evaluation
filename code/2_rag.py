@@ -7,7 +7,7 @@ Assumes prior execution of:
 
 Usage:
     run_rag_router(
-        question="What safety checks should I perform before jogging a UR5e robot?",
+        question="Whart safety checks should I perform before jogging a UR5e robot?",
         approach="openai_semantic,
         csv_path="results/rag_results.csv",
         append=True
@@ -139,8 +139,11 @@ def _ask_with_sources(
         reasoning={"effort": effort},
         max_output_tokens=max_tokens,
     )
+    # if getattr(resp, "status", "") == "incomplete":
+    #     print(resp)
     usage = getattr(resp, "usage", None)
     meta = {
+        "hits_text": sources_xml,
         "resp_id": getattr(resp, "id", None),
         "model": getattr(resp, "model", None),
         "status": getattr(resp, "status", None),
@@ -148,6 +151,7 @@ def _ask_with_sources(
         "input_tokens": getattr(usage, "input_tokens", None) if usage else None,
         "output_tokens": getattr(usage, "output_tokens", None) if usage else None,
         "total_tokens": getattr(usage, "total_tokens", None) if usage else None,
+        "reason": getattr(resp, "incomplete_details", None) if usage else None,
     }
     return (getattr(resp, "output_text", "") or ""), meta
 
