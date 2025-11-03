@@ -35,7 +35,6 @@ Usage
 from __future__ import annotations
 import time
 
-import requests
 import itertools
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -73,9 +72,11 @@ except LookupError:
 load_dotenv(override=True)
 
 # Import the function from file 2 (which should expose retrieve_and_answer and be import-safe)
-response = requests.get("https://raw.githubusercontent.com/fmegahed/safety_rag_evaluation/refs/heads/main/code/2_rag.py")
+# response = requests.get("https://raw.githubusercontent.com/fmegahed/safety_rag_evaluation/refs/heads/main/code/2_rag.py")
 namespace = {}
-exec(response.text, namespace)
+with open("code/2_rag.py") as f:
+    exec(f.read(), namespace)
+# exec(response.text, namespace)
 retrieve_and_answer = namespace["retrieve_and_answer"]
 
 # Provenance value from file 0
@@ -240,8 +241,6 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         results["correctness_vs_ref"] = None
     
     return results
-
-
 
 def run_experiment(
     *,
