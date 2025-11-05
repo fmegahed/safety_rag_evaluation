@@ -24,6 +24,7 @@ from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
 from openai import OpenAI
+import requests
 
 load_dotenv(override=True)
 
@@ -80,7 +81,7 @@ class JudgeInput:
     """
     Minimal record required to build batch judge requests.
 
-    Add any custom fields to ``metadata`` so they travel with every request.
+    Add any custom fields to ``metadata`` so they travel with every request. Minimise metadata since openAI batch request have size limit of 200mb.
     """
 
     qa_id: str
@@ -99,7 +100,10 @@ def now_et() -> str:
 
 
 def _response_body(*, system_prompt: str, user_prompt: str, judge_model: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
-    return {
+    """
+    Build the body for a single POST /v1/responses request.
+    """
+    return {    
         "model": judge_model,
         "input": [
             {"role": "system", "content": system_prompt},
@@ -290,9 +294,7 @@ def load_judge_inputs_from_csv(csv_path: Path) -> List[JudgeInput]:
 
 def main() -> None:
     """
-    Build (but do not submit) batch requests using the CSV from step 3.
-
-    This keeps the Batch API call deliberate so the JSONL can be reviewed first.
+    Build batch requests using the CSV from step 3. and sends request 
     """
     import argparse
 
@@ -320,11 +322,12 @@ def main() -> None:
     requests = build_requests(records, judge_model=args.judge_model)
     write_requests_jsonl(requests, args.output)
 
-    # Uncomment these lines after inspecting the JSONL to trigger the Batch API call.
+    print(f"Prepared {len(requests)} requests. JSONL written to {args.output}")
     # submission = submit_batch(requests)
-    # print(json.dumps(submission, indent=2))
+    print(json.dumps(submission, indent=2))
 
     print(f"Prepared {len(requests)} requests. JSONL written to {args.output}")
+
 
 
 # ---------------------------------------------------------------------------
