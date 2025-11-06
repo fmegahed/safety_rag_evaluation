@@ -1,239 +1,97 @@
 """
-Utilities for retrieving and normalizing OpenAI Batch judge outputs (step 4.4).
-
-Use this after submitting the batch in 4_3 so you can download the response JSONL
-and convert it into a lighter-weight structure for analysis.
+Download a finished OpenAI Batch run and pivot the JSONL responses into one JSON file.
 """
 
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, List
 
 from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv(override=True)
 
-
-# ---------------------------------------------------------------------------
-# Core retrieval helpers
-# ---------------------------------------------------------------------------
-def _ensure_client(client: Optional[OpenAI] = None) -> OpenAI:
-    return client or OpenAI()
+# Set these to whatever is convenient before running the script.
+BATCH_ID = os.environ.get("OPENAI_BATCH_ID") or "batch_690ae971d7048190a982f22185698051"
+RAW_PATH = Path("results/4_5_batch_output.jsonl")
+JSON_PATH = Path("results/4_5_batch_output.json")
 
 
-def retrieve_batch(batch_id: str, *, client: Optional[OpenAI] = None) -> Dict[str, Any]:
-    """
-    Fetch the latest metadata for a Batch job.
-
-    Only call this once you know the job has finished; otherwise the output file
-    will not be available yet.
-    """
-    client = _ensure_client(client)
-    return client.batches.retrieve(batch_id)
-
-
-def download_output_file(output_file_id: str, destination: Path, *, client: Optional[OpenAI] = None) -> Path:
-    """
-    Download the batch output JSONL to ``destination``.
-
-    Parameters
-    ----------
-    output_file_id:
-        The ``output_file_id`` returned by ``client.batches.retrieve`` once the job
-        has finished processing.
-    destination:
-        Where to save the JSONL file locally.
-    """
-    client = _ensure_client(client)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with client.files.with_streaming_response.content(output_file_id) as stream:
-        stream.stream_to_file(destination)
-    return destination
+def _extract_text(body: Dict[str, Any]) -> str:
+    pieces: List[str] = []
+    for item in body.get("output") or []:
+        item_type = item.get("type")
+        if item_type == "output_text":
+            text = (item.get("text") or "").strip()
+            if text:
+                pieces.append(text)
+        elif item_type == "output_message":
+            for part in item.get("content") or []:
+                if part.get("type") != "output_text":
+                    continue
+                text = (part.get("text") or "").strip()
+                if text:
+                    pieces.append(text)
+    return "\n".join(pieces)
 
 
-# ---------------------------------------------------------------------------
-# Normalization helpers
-# ---------------------------------------------------------------------------
 def _load_jsonl(path: Path) -> List[Dict[str, Any]]:
-    records: List[Dict[str, Any]] = []
+    rows: List[Dict[str, Any]] = []
     with path.open("r", encoding="utf-8") as handle:
         for line in handle:
             line = line.strip()
-            if not line:
-                continue
-            records.append(json.loads(line))
-    return records
+            if line:
+                rows.append(json.loads(line))
+    return rows
 
 
-def _extract_output_text(response_body: Dict[str, Any]) -> str:
-    pieces: List[str] = []
-    for item in response_body.get("output") or []:
-        if item.get("type") == "output_text":
-            text = item.get("text", "")
-            if text:
-                pieces.append(text)
-        elif item.get("type") == "output_message":
-            for content in item.get("content") or []:
-                if content.get("type") == "output_text":
-                    text = content.get("text", "")
-                    if text:
-                        pieces.append(text)
-    return "\n".join(piece.strip() for piece in pieces if piece.strip())
 
+client = OpenAI()
 
-def _judge_type_from_custom_id(custom_id: Optional[str]) -> Optional[str]:
-    if not custom_id:
-        return None
-    if "__" not in custom_id:
-        return None
-    return custom_id.split("__", 1)[1]
+batch = client.batches.retrieve(BATCH_ID).model_dump()
+if batch.get("status") != "completed":
+    raise SystemExit(f"Batch {BATCH_ID} is not complete yet (status={batch.get('status')!r}).")
 
+output_file_id = batch.get("output_file_id")
+if not output_file_id:
+    raise SystemExit(f"Batch {BATCH_ID} does not expose an output_file_id.")
 
-def normalize_batch_records(raw_records: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Convert raw batch response lines into lightweight dictionaries.
-    """
-    normalized: List[Dict[str, Any]] = []
-    for record in raw_records:
-        custom_id = record.get("custom_id")
-        base: Dict[str, Any] = {
-            "custom_id": custom_id,
-            "judge_type": _judge_type_from_custom_id(custom_id),
-            "permutation_id": None,
-            "response_id": None,
-            "status_code": None,
-            "model": None,
-            "usage": None,
-            "text": "",
-            "error": None,
-        }
-        if "error" in record:
-            base["error"] = record["error"]
-            normalized.append(base)
-            continue
+RAW_PATH.parent.mkdir(parents=True, exist_ok=True)
+JSON_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-        response_info = record.get("response") or {}
-        body = response_info.get("body") or {}
-        metadata = body.get("metadata") or {}
+with client.files.with_streaming_response.content(output_file_id) as stream:
+    stream.stream_to_file(RAW_PATH)
 
-        base["permutation_id"] = metadata.get("permutation_id")
-        base["response_id"] = body.get("id")
-        base["status_code"] = response_info.get("status_code")
-        base["model"] = body.get("model")
-        base["usage"] = body.get("usage")
-        base["text"] = _extract_output_text(body)
+raw_records = _load_jsonl(RAW_PATH)
 
-        normalized.append(base)
-    return normalized
+pivot: Dict[str, Dict[str, Any]] = {}
+for record in raw_records:
+    custom_id = record.get("custom_id")
+    if not custom_id or "__" not in custom_id:
+        continue
+    qa_id, judge_type = custom_id.split("__", 1)
+    slot = pivot.setdefault(qa_id, {"qa_id": qa_id})
 
+    if record.get("error"):
+        slot[f"{judge_type}_error"] = record["error"]
+        continue
 
-def write_normalized_records(records: Iterable[Dict[str, Any]], destination: Path) -> Path:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with destination.open("w", encoding="utf-8") as handle:
-        json.dump(list(records), handle, indent=2, ensure_ascii=False)
-    return destination
+    response = record.get("response") or {}
+    body = response.get("body") or {}
 
+    metadata = body.get("metadata") or {}
+    if metadata.get("permutation_id") and not slot.get("permutation_id"):
+        slot["permutation_id"] = metadata["permutation_id"]
 
-# ---------------------------------------------------------------------------
-# Orchestration
-# ---------------------------------------------------------------------------
-def fetch_batch_output(
-    *,
-    batch_id: Optional[str] = None,
-    output_file_id: Optional[str] = None,
-    raw_output_path: Path = Path("results/4_4_batch_output.jsonl"),
-    normalized_output_path: Path = Path("results/4_4_batch_output.json"),
-    client: Optional[OpenAI] = None,
-) -> Dict[str, Any]:
-    """
-    Download and normalize the responses for a completed batch job.
+    slot[f"{judge_type}_text"] = _extract_text(body)
 
-    Provide either ``batch_id`` (preferred, so the script can look up the latest
-    file id) or ``output_file_id`` if you have already captured it.
-    """
-    if not batch_id and not output_file_id:
-        raise ValueError("Provide either batch_id or output_file_id.")
+JSON_PATH.write_text(json.dumps(list(pivot.values()), indent=2, ensure_ascii=False), encoding="utf-8")
 
-    client = _ensure_client(client)
-
-    if batch_id:
-        batch = retrieve_batch(batch_id, client=client)
-        status = batch.get("status")
-        if status != "completed":
-            raise RuntimeError(f"Batch {batch_id} is not complete yet (status={status!r}).")
-        output_file_id = batch.get("output_file_id")
-        if not output_file_id:
-            raise RuntimeError(f"Batch {batch_id} does not expose an output_file_id yet.")
-    assert output_file_id is not None
-
-    download_output_file(output_file_id, raw_output_path, client=client)
-    raw_records = _load_jsonl(raw_output_path)
-    normalized_records = normalize_batch_records(raw_records)
-    write_normalized_records(normalized_records, normalized_output_path)
-
-    return {
-        "raw_path": str(raw_output_path),
-        "normalized_path": str(normalized_output_path),
-        "records": normalized_records,
-    }
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-def main() -> None:
-    """
-    Convenience CLI so the user can fetch batch results without writing extra code.
-
-    Run this only after the Batch API reports ``status == 'completed'``.
-    """
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Download and normalize judge outputs from an OpenAI Batch job.")
-    parser.add_argument("--batch-id", help="The Batch job identifier returned when you created the job.")
-    parser.add_argument("--output-file-id", help="Optional: download directly if you already have the file id.")
-    parser.add_argument(
-        "--raw-output-path",
-        type=Path,
-        default=Path("results/4_4_batch_output.jsonl"),
-        help="Where to save the raw JSONL returned by the Batch API.",
-    )
-    parser.add_argument(
-        "--normalized-output-path",
-        type=Path,
-        default=Path("results/4_4_batch_output.json"),
-        help="Where to write the simplified JSON summary.",
-    )
-    args = parser.parse_args()
-
-    result = fetch_batch_output(
-        batch_id=args.batch_id,
-        output_file_id=args.output_file_id,
-        raw_output_path=args.raw_output_path,
-        normalized_output_path=args.normalized_output_path,
-    )
-
-    print(
-        f"Downloaded {len(result['records'])} records.\n"
-        f"Raw JSONL saved to {result['raw_path']}\n"
-        f"Normalized JSON saved to {result['normalized_path']}"
-    )
-
-
-# ---------------------------------------------------------------------------
-# Exports
-# ---------------------------------------------------------------------------
-__all__ = [
-    "retrieve_batch",
-    "download_output_file",
-    "normalize_batch_records",
-    "write_normalized_records",
-    "fetch_batch_output",
-]
-
-
-if __name__ == "__main__":
-    main()
+print(
+    f"Downloaded batch output to {RAW_PATH}\n"
+    f"Wrote widened JSON to {JSON_PATH}\n"
+    f"Total groups: {len(pivot)}"
+)
