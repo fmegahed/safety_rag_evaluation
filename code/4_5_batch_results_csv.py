@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict
 
+
 SOURCE_CSV = Path("results/rag_generation.csv")
 BATCH_JSON = Path("results/4_5_batch_output.json")
 OUT_CSV = Path("results/4_5_judge_results.csv")
