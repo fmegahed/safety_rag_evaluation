@@ -1,0 +1,8646 @@
+permutation_id,time_started,time_ended,total_elapsed_time,min_words_for_subsplit,approach,model,max_tokens,reasoning_effort,top_k,answer_instructions_id,few_shot_id,replicate,question,gold_answer,generated_answer,retrieved_files,meta_hits_text,meta_resp_id,meta_model,meta_status,meta_created,meta_input_tokens,meta_output_tokens,meta_total_tokens,meta_reason
+eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX2tleXdvcmQiLCJlZmZvcnQiOiJsb3ciLCJmZXdfc2hvdF9pZCI6IkEiLCJtYXhfdG9rZW5zIjo1MDAwLCJtb2RlbCI6ImdwdC01LW1pbmktMjAyNS0wOC0wNyIsInF1ZXN0aW9uIjoiSG93IG1hbnkgc2FmZXR5IG1vZGVzIGRvZXMgdGhlIGFybSBoYXZlLCBhbmQgd2hhdCBhcmUgdGhlIG5hbWVzIG9mIGVhY2g_IiwicmVhc29uaW5nX2VmZm9ydCI6ImxvdyIsInRvcF9rIjozfX3_Wc-JXZdVRg,2025-11-06 20:36:43 EST,2025-11-06 20:36:52 EST,8.17 Seconds,3000,openai_keyword,gpt-5-mini-2025-08-07,5000,low,3,A,A,1,"How many safety modes does the arm have, and what are the names of each?","The robot arm has three safety modes. Normal mode, reduced mode, and recovery mode. ","There are two safety modes: Normal and Reduced. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]
+
+Supporting points:
+- The safety system has configurable safety parameter sets named Normal and Reduced; the Reduced configuration is active when triggered by a Trigger Reduced Plane or an external safety input. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]",013__L1__13._Emergency_Events__pp181-189.pdf;010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf;010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf,"<sources><result file_id='file-8i37d9zxCTmvxgnMidtQrQ' filename='013__L1__13._Emergency_Events__pp181-189.pdf' score='0.5988'><content>13. Emergency Events
+Description Follow the instructions here to handle emergency situations, such as activating the
+
+emergency stop using the red push-button. This section also describes how to manually
+move the system without power.
+
+13.1. Emergency Stop
+
+Description The Emergency Stop or E-stop is the red push-button located on the Teach Pendant.
+Press the emergency stop push-button to stop all robot motion. Activating the
+emergency stop push-button causes a stop category one (IEC 60204-1).
+Emergency stops are not safeguards (ISO 12100).
+
+Emergency stops are complementary protective measures that do not prevent injury.
+The risk assessment of the robot application determines if additional emergency stop
+push-buttons are required. The emergency stop function and the actuating device must
+comply with ISO 13850.
+After an emergency stop is actuated, the push-button latches in that setting. As such,
+each time an emergency stop is activated, it must be manually reset at the push-button
+that initiated the stop.
+Before resetting the emergency stop push-button, you must visually identify and assess
+the reason the E-stop was first activated. Visual assessment of all the equipment in the
+application is required. Once the problem is solved, reset the emergency stop push-
+button.
+
+To reset the emergency stop push-button
+
+1. Hold the push-button and twist clockwise until the latching disengages.
+
+You should feel when the latching is disengaged, indicating the push-button is
+reset.
+
+2. Verify the situation and whether to reset the emergency stop.
+
+3. After resetting the emergency stop, restore power to the robot and resume
+operation.
+
+User Manual 182 UR5e
+
+13. Emergency Events
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.2. MovementWithout Drive Power
+
+Description In the unlikely event of an emergency, when powering the robot is either impossible or
+unwanted, you can use forced back-driving to move the robot arm.
+
+To perform forced back-driving you must push, or pull, the robot arm hard to move the
+joint. Each joint brake has a friction clutch that enables movement during high forced
+torque.
+
+Performing forced back-driving requires high force and cannot be performed by one
+person alone. In clamping situations, two or more people are required to do the forced
+back-driving. In some situations, two or more people are required to disassemble the
+robot arm.
+
+See the Service Manual for information about how to disassemble the robot.
+
+WARNING
+
+Risks due to an unsupported robot arm breaking or falling can cause
+injury or death.
+
+• Support the robot arm before removing power.
+
+NOTICE
+
+Moving the robot arm manually is intended for emergency and service
+purposes only. Unnecessary moving of the robot arm can lead to
+property damage.
+
+• Do not move the joint more than 160 degrees, to ensure the
+robot can find its original physical position.
+
+• Do not move any joint more than necessary.
+
+UR5e 183 User Manual
+
+13. Emergency Events
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3. Modes
+
+Description You access and activate different modes using Teach Pendant or the Dashboard
+Server. If an external mode selector is integrated, it control the modes - not PolyScope or
+the Dashboard Server.
+
+Automatic Mode Once activated, the robot can only execute a program of pre-defined
+tasks. You cannot modify or save programs and installations.
+Manual Mode Once activated, you can program the robot. You can modify and save
+programs and installations.
+
+High Speed Manual Mode can be used. It allows both tool speed and elbow speed to
+temporarily exceed 250 mm/s, while a hold-to-run is used.
+Hold-to-run is performed by continuous contact with the Speed Slider.
+
+The robot performs a Safeguard Stop in Manual mode, if a Three-Position Enabling
+Device is configured, and either released (not pressed) or it is fully compressed.
+
+Switching between Automatic mode to Manual mode requires the Three-Position
+Enabling Device to be fully released and pressed again to allow the robot to move.
+When using High Speed Manual Mode, use safety joint limits (see Joint Limits) or safety
+planes (see Safety Planes) to restrict the robot’s moving space.
+
+Mode
+switching
+
+Operational mode Manual Automatic
+
+Freedrive x *
+Move robot with arrows on Move Tab x *
+Edit &amp; save program &amp; installation x
+
+Execute Programs
+Reduced
+speed**
+
+*
+
+Start program from selected node x
+*Only when no Three-Position Enabling Device is configured.
+** If a Three-Position Enabling Device is configured, the robot operates at Manual
+Reduced Speed unless High Speed Manual Mode is activated.
+
+User Manual 184 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Notice when
+switching
+mode
+
+NOTICE
+• Some UR robot sizes might not be equipped with a Three-Position
+Enabling Device. If the risk assessment requires the enabling
+device, a 3PE Teach Pendant must be used.
+
+WARNING
+• Any suspended safeguards must be returned to full functionality
+before selecting Automatic Mode.
+
+• Wherever possible, Manual Mode shall only be used with all
+persons located outside the safeguarded space.
+
+• If an external mode selector is used, it must be placed outside the
+safeguarded space.
+
+• No-one is to enter, or be within, the safeguarded space in Automatic
+Mode, unless safeguarding is used or the collaborative application
+is validated for power and force limiting (PFL).
+
+To Switch
+Modes: PolyScope
+
+1. In the Header, select the profile icon.
+
+• Automatic indicates the operational mode of the robot is set to
+Automatic.
+
+• Manual indicates the operational mode of the robot is set to Manual.
+
+Using the
+Dashboard
+Server
+
+1. Connect to the Dashboard server.
+
+2. Use the Set Operational Mode commands.
+
+• Set Operational Mode Automatic
+
+• Set Operational Mode Manual
+
+• Clear Operational Mode
+
+Three-Position
+Enabling
+Device
+
+When a Three-Position Enabling Device is used and the robot is in Manual Mode,
+movement requires pressing the Three-Position Enabling Device to the center-on
+position. The Three-Position Enabling Device has no effect in Automatic Mode.
+
+A 3PE Teach Pendant is recommended for programming. If another person can be within
+the safeguarded space when in Manual Mode, an additional device can be integrated and
+configured for the additional person&#x27;s use.
+
+UR5e 185 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3.1. RecoveryMode
+
+Description When a safety limit is exceeded, Recovery Mode is automatically activated, allowing the
+robot arm to be moved. Recovery Mode is a type of Manual Mode .
+You cannot run robot programs when Recovery Mode is active.
+
+During Recovery Mode, the robot arm is moved to be within joint limits, using either
+Freedrive or the Move tab in PolyScope.
+
+Safety limits
+of Recovery
+Mode
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery.
+
+13.3.2. Backdrive
+
+Description Backdrive is a Manual Mode used to force specific joints to a desired position without
+releasing all brakes in the robot arm.
+This is sometimes necessary if the robot arm is close to collision and the vibrations that
+accompany a full restart are not desired.
+The robot joints feel heavy to move, while Backdrive is in use.
+
+You can use any of the following sequences to enable Backdrive:
+
+• 3PE Teach Pendant
+
+• 3PE device/switch
+
+• Freedrive on robot
+
+User Manual 186 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+3PE Teach
+Pendant
+
+To use the 3PE TP button to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as light-press is maintained on the 3PE button, Backdrive is enabled,
+allowing the arm to move. 
+
+3PE
+device/switch
+
+To use a 3PE device/switch to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to System 3PE Stop.
+
+3. Press and hold the 3PE device/switch.
+The robot state changes to Backdrive.
+
+4. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on both the 3PE device/switch and the 3PE TP
+button, Backdrive is enabled, allowing the arm to move. 
+
+Freedrive on
+robot
+
+To use Freedrive on robot to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, press and hold the Freedrive
+on robot.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on the Freedrive on robot, Backdrive is enabled,
+allowing the arm to move. 
+
+UR5e 187 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Backdrive Inspection
+
+Description If the robot is close to colliding with something, you can use Backdrive to move the robot
+arm to a safe position before initializing.
+
+3PE Teach Pendant
+
+User Manual 188 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Enable
+Backdrive
+
+1. Press ON to enable power. Status changes to Robot Active
+
+2. Press and hold Freedrive. Status changes to Backdrive
+
+3. Move robot as in Freedrive mode. Joint brakes are released where needed once
+the Freedrive button is activated.
+
+NOTICE
+
+In Backdrive Mode the robot is “heavy” to move around.
+
+MANDATORY ACTION
+
+You must test Backdrive mode on all joints.
+
+Safety
+settings
+
+Verify the robot safety settings comply with the robot installation risk assessment.
+
+Additional
+safety inputs
+and outputs
+are still
+functioning
+
+Check which safety inputs and outputs are active and that they can be triggered via
+PolyScope or external devices.
+
+UR5e 189 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User Manual 190 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-Fw98fbrtomcR56SJuRFM8n' filename='010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf' score='0.5108'><content>10.2. Safety-related Functions and Interfaces
+
+Description Universal Robots robots are equipped with a range of built-in safety functions as well as
+safety I/O, digital and analog control signals to or from the electrical interface, to connect
+to other machines and additional protective devices. Each safety function and I/O is
+constructed according to EN ISO13849-1 (see Certifications) with Performance Level d
+(PLd) using a category 3 architecture.
+See Software Safety Configuration for configuration of the safety functions, inputs and
+outputs in the user interface. See Safety I/O for descriptions on how to connect safety
+devices to I/O.
+
+WARNING
+
+The use of safety configuration parameters different from those
+determined as necessary for risk reduction, can result in hazards that
+are not reasonably eliminated, or risks that are not sufficiently reduced.
+
+• Ensure tools and grippers are connected correctly to avoid
+hazards due to interruption of power.
+
+WARNING: ELECTRICITY
+
+Programmer and/or wiring errors can cause the voltage to change from
+12V to 24V leading to fire damage to equipment.
+
+• Verify the use of 12V and proceed with caution.
+
+Additional
+Information NOTICE
+
+• The use and configuration of safety functions and interfaces must
+follow the risk assessment procedures for each robot application.
+(see chapter Safety section Safety-related Functions and
+Interfaces)
+
+• The stopping time should be taken into account as part of the
+application risk assessment
+
+• If the robot detects a fault or violation in the safety system (e.g. if
+one of the wires in the Emergency Stop circuit is cut or a safety
+limit is exceeded), then a Stop Category 0 is initiated.
+
+NOTICE
+
+The end effector is not protected by the UR safety system. The
+functioning of the end effector and/or connection cable is not monitored
+
+User Manual 100 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.1. Configurable Safety Functions
+
+Description Universal Robots robot safety functions, as listed in the table below, are in the robot but
+are meant to control the robot system i.e. the robot with its attached tool/end effector.
+The robot safety functions are used to reduce robot system risks determined by the risk
+assessment. Positions and speeds are relative to the base of the robot.
+
+Safety
+Function
+
+Description
+
+Joint Position
+Limit
+
+Sets upper and lower limits for the allowed joint positions.
+
+Joint Speed
+Limit
+
+Sets an upper limit for joint speed.
+
+Safety
+Planes
+
+Defines planes, in space, that limit robot position. Safety planes limit
+either the tool/end effector alone or both the tool/end effector and the
+elbow.
+
+Tool
+Orientation
+
+Defines allowable orientation limits for the tool.
+
+Speed Limit
+Limits maximum robot speed. The speed is limited at the elbow, at the
+tool/end effector flange, and at the center of the user-defined tool/end
+effector positions.
+
+Force Limit
+Limits maximum force exerted by the robot tool/end effector and elbow
+in clamping situations. The force is limited at the tool/end effector,
+elbow flange and center of the user-defined tool/end effector positions.
+
+Momentum
+Limit
+
+Limits maximummomentum of the robot.
+
+Power Limit Limits mechanical work performed by the robot.
+Stopping
+Time Limit
+
+Limits maximum time the robot uses for stopping after a robot stop is
+initiated.1
+
+Stopping
+Distance
+Limit
+
+Limits maximum distance travelled by the robot after a robot stop is
+initiated.
+
+Safety
+Function
+
+When performing the application risk assessment, it is necessary to take into account the
+motion of the robot after a stop has been initiated. In order to ease this process, the safety
+functions Stopping Time Limit and Stopping Distance Limit can be used.
+These safety functions dynamically reduces the speed of the robot motion such that it can
+always be stopped within the limits. The joint position limits, the safety planes and the
+tool/end effector orientation limits take the expected stopping distance travel into account
+i.e. the robot motion will slow down before the limit is reached.
+The functional safety can be summarized as:
+
+1Robot stop was previously known as &quot;Protective stop&quot;.
+
+UR5e 101 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety Function Accuracy Performance Level Category
+
+Emergency Stop – d 3
+Safeguard Stop – d 3
+Joint Position Limit 5 ° d 3
+Joint Speed Limit 1.15 °/s d 3
+Safety Planes 40 mm d 3
+Tool Orientation 3 ° d 3
+Speed Limit 50 mm/s d 3
+Force Limit 25 N d 3
+Momentum Limit 3 kg m/s d 3
+Power Limit 10 W d 3
+Stopping Time Limit 50 ms d 3
+Stopping Distance Limit 40 mm d 3
+Safe Home 1.7 ° d 3
+
+Warnings
+CAUTION
+
+Failure to configure the maximum speed limit can result in hazardous
+situations.
+
+• If the robot is used in manual hand-guiding applications with linear
+movements, the speed limit must be set to maximum 250 mm/s for
+the tool/end effector and elbow unless a risk assessment shows
+that higher speeds are acceptable. This will prevent fast
+movements of the robot elbow near singularities.
+
+NOTICE
+
+There are two exceptions to the force limiting function that are important
+when designing an application.
+As the robot stretches out, the knee-joint effect can give high forces in the
+radial direction (away from the base) at low speeds. Similarly, the short
+leverage arm, when the tool/end effector is close to the base and moving
+around the base, can cause high forces at low speeds.
+
+User Manual 102 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Workspace
+
+Front Tilted
+
+Due to the physical properties of the robot arm, certain workspace areas require attention
+regarding pinching hazards. One area (left) is defined for radial motions when the wrist 1
+joint is at least 450 mm from the base of the robot. The other area (right) is within 200 mm
+
+of the base of the robot, when moving tangentially.
+
+Placing the robot in certain areas can create pinching hazards that can lead to injury.
+
+UR5e 103 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+inputs
+
+The robot also has the following safety inputs:
+
+Safety Input Description
+
+Emergency
+Stop Button
+
+Performs a Stop Category 1 (IEC 60204-1) informing other machines using
+the System Emergency Stop output, if that output is defined. A stop is
+initiated in anything connected to the output.
+
+Robot
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) via Control Box input, informing
+other machines using the System Emergency Stop output, if that output is
+defined.
+
+System
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) on robot only, in all modes and
+takes precedence over all other commands.
+
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in all modes, except when using
+a 3-Position Enabling Device and a mode selector - then when in Manual
+Mode, the Safeguard Stop can be set to only function in Automatic Mode.
+
+Automatic
+Mode
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in Automatic mode ONLY.
+Automatic Mode Safeguard Stop can only be selected when a Three-
+Position Enabling Device is configured and installed.
+
+Safeguard
+Reset
+
+Returns from the Safeguard Stop state, when a rising edge on the
+Safeguard Reset input occurs.
+
+Reduced
+Mode
+
+Transitions the safety system to use the Reduced mode limits.
+
+Three-
+Position
+Enabling
+Device
+
+Initiates a Stop Category 2 (IEC 60204-1) when the enabling device is fully
+pressed or fully released in manual mode only. Three-Position Enabling
+Device Stop is triggered when an input goes low. It is unaffected by a
+Safeguard Reset.
+
+Freedrive on
+robot
+
+Enables freedrive, when the robot is not in Automatic Mode.
+
+Operational
+Mode
+
+Switches between Operational modes. The robot is in Automatic mode
+when input is low, Manual mode when input is high.
+
+Automatic
+Mode
+Safeguard
+Reset
+
+Returns from the Automatic Mode Safeguard Stop state, when a rising
+edge on the Automatic Mode Safeguard Reset input occurs.
+
+User Manual 104 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+outputs
+
+For interfacing with other machines, the robot is equipped with the following safety outputs:
+
+Safety
+Output
+
+Description
+
+System
+Emergency
+Stop
+
+While this signal is logic low, the Robot Emergency Stop input is logic low
+or the Emergency Stop button is pressed.
+
+Robot
+Moving
+
+While this signal is logic high, no single joint of the robot moves more than
+0.1 rad/s.
+
+Robot Not
+Stopping
+
+Logic high when the robot is stopped or in the process of stopping due to
+an Emergency Stop or Safeguard Stop. Otherwise it will be logic low.
+
+Reduced Logic low when the safety system is in Reduced Mode.
+Not Reduced Logic low when the system is not in Reduced Mode.
+Safe Home Logic high when robot is in the configured Safe Home Position.
+
+All safety I/O are dual channel, meaning they are safe when low (e.g., the Emergency Stop is
+active when the signals are low).
+
+10.2.2. Safety Functions
+
+Description The safety system acts by monitoring if any of the safety limits are exceeded or if an
+Emergency Stop or a Safeguard Stop is initiated.
+The reactions of the safety system are:
+
+Trigger Reaction
+
+Emergency Stop Stop Category 1
+Safeguard Stop Stop Category 2
+3PE Stop (if a 3-Position Enabling device is connected) Stop Category 2
+Limit Violation Stop Category 0
+Fault Detection Stop Category 0
+
+NOTICE
+
+If the safety system detects any fault or violation, all safety outputs re-
+set to low.
+
+UR5e 105 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.3. Safety Parameter Set
+
+Description The safety system has the following set of configurable safety parameters:
+
+• Normal
+
+• Reduced
+
+Normal and
+Reduced
+
+You can set up the safety limits for each set of safety parameters, creating distinct
+configurations for normal, or higher settings, and reduced. The reduced configuration is
+active when the tool/end effector is positioned on the reduced side of a Trigger Reduced
+Plane, or when the reduced configuration is externally triggered by a safety input.
+Using a plane to trigger the Reduced configuration: When the robot arm moves from the
+side of the trigger plane configured with reduced safety parameters, to the side that is
+configured with normal safety parameters, there is a 20 mm area around the trigger plane
+where both normal and reduced limits are allowed. This area around the trigger plane
+prevents nuisance safety stops when the robot is exactly at the limit.
+Using an input to trigger the Reduced configuration: When a safety input starts, or stops,
+the reduced configuration, up to 500 ms can elapse before the new limit values become
+active. This can happen in either of the following circumstances:
+
+• Switching from the reduced configuration to normal
+
+• Switching from the normal configuration to reduced
+
+The robot arm adapts to the new safety limits within the 500 ms.
+
+User Manual 106 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Recovery When a safety limit is exceeded, the safety system must be restarted. For example, if a joint
+position limit is outside a safety limit, at start-up, Recovery is activated.
+You cannot run programs for the robot when recovery is activated, but the robot arm can be
+manually moved back within limits using Freedrive, or by using the Move tab in PolyScope.
+The safety limits for Recovery are:
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery mode.
+
+UR5e 107 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-EJroE1YhVEfeKiuXQvtUA3' filename='010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf' score='0.5018'><content>10.4. Software Safety Restrictions
+
+Description
+NOTICE
+
+Configuring planes is entirely based on features. We recommend you
+create and name all features before editing the safety configuration, as
+the robot is powered off once the Safety Tab has been unlocked and
+moving the robot will be impossible.
+
+Safety planes restrict robot workspace. You can define up to eight safety planes,
+restricting the robot tool and elbow. You can also restrict elbow movement for each
+safety plane and disable by deselecting the checkbox. Before configuring safety planes,
+you must define a feature in the robot installation. The feature can then be copied into the
+safety plane screen and configured.
+
+WARNING
+
+Defining safety planes only limits the defined Tool spheres and elbow,
+not the overall limit for the robot arm. This means that specifying a
+safety plane, does not guarantee that other parts of the robot arm will
+obey this restriction.
+
+Saf
+ety
+Pla
+nes
+Mod
+es
+
+You can configure each plane with restrictive Modes using the icons listed below.
+
+Disabled The safety plane is never active in this state.
+
+Normal
+When the safety system is in Normal mode, a normal plane is
+active and it acts as a strict limit on the position.
+
+Reduced
+When the safety system is in Reduced mode, a reduced mode
+plane is active and it acts as a strict limit on the position.
+
+Normal &amp; Reduced
+When the safety system is either in Normal or Reduced mode,
+a normal and reduced mode plane is active and acts as a strict
+limit on the position.
+
+Trigger Reduced
+Mode
+
+The safety plane causes the safety system to switch to
+Reduced mode if the robot Tool or Elbow is positioned beyond
+it.
+
+Show
+Pressing this icon hides or shows the safety plane in the
+graphics pane.
+
+Delete
+Deletes the created safety plane. There is no undo/redo
+action. If a plane is deleted in error, it must be remade.
+
+Rename Pressing this icon allows you to rename the plane.
+
+User Manual 122 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Configuring
+safety planes
+
+1. In your PolyScope header, tap Installation.
+
+2. In the Side Menu on the left of the screen, tap Safety and select Planes.
+
+3. On the top right of the screen, in the Planes field, tap Add plane.
+
+4. On the bottom right of the screen, in the Properties field, set up Name, Copy
+Feature and Restrictions.
+
+Copy
+Feature
+
+In Copy Feature, only Undefined and Base are available. You can reset a configured safety
+plane by selecting Undefined
+If the copied feature is modified in the Features screen, a warning icon appears to the right of
+the Copy Feature text. This indicates that the feature is out of sync i.e. the information in the
+properties card is not updated to reflect the modifications that may have been made to the
+Feature.
+
+UR5e 123 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Col
+or
+Cod
+es
+
+Gray Plane is configured but disabled (A)
+Yellow &amp; Black Normal Plane (B)
+Blue &amp; Green Trigger Plane (C)
+
+Black Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Normal Planes)
+
+Green Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Trigger Planes)
+
+Gray Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Disabled Planes)
+
+User Manual 124 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Elbow
+Restriction
+
+You can enable Restrict Elbow to prevent robot elbow joint from passing through any of
+your defined planes. Disable Restrict Elbow for elbow to pass through planes.
+The diameter of the ball that restricts the elbow is different for each size of robot.
+
+UR3e 0.1 m
+UR5e 0.13 m
+UR10e / UR16e 0.15 m
+UR20 / UR30 0.19 m
+
+The information about the specific radius can be found in the urcontrol.conf file on the robot
+under the section [Elbow].
+
+Tool Flange
+Restriction
+
+Restricting the tool flange prevents the tool flange and the attached tool from crossing a
+safety plane. When you restrict the tool flange, the unrestricted area is the area inside of
+the safety plane, where the tool flange can operate normally.
+The tool flange cannot cross the restricted area, outside of the safety plane.
+
+Removing the restriction allows the tool flange to go beyond the safety plane, to the
+restricted area, while the attached tool remains inside of the safety plane.
+
+You can remove the tool flange restriction when working with a large tool off-set. This will
+allow extra distance for the tool to move.
+
+Restricting the tool flange requires the creation of a plane feature. The plane feature is
+used to set up a safety plane later in the safety settings.
+
+UR5e 125 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Adding a
+plane feature
+example
+
+Displacement offsets the plane in either the positive or negative direction along the plane
+normal (Z-axis of the plane feature).
+Deselect the checkbox for the Elbow and the Tool Flange so they do not trigger the safety
+plane. The Elbow can remain checked as needed by your application.
+
+The unrestricted tool flange can cross a safety plane, even when no tool is defined.
+If no tool is added, a warning on the Tool Position button prompts you to correctly define the
+tool.
+When working with an unrestricted tool flange and a defined tool, it is ensured that the
+dangerous part of the tool can&#x27;t go above and/or beyond certain area. The unrestricted tool
+flange can be used for any application where safety planes are needed, like Welding or
+Assembly.
+
+User Manual 126 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool flange
+restriction
+example
+
+In this example, an X-Y-plane is created with an offset of 300mm along the positive Z-axis
+with reference to the base feature.
+The Z-axis of the plane can be thought of as “pointing” towards the restricted area.
+If the safety plane is needed on e.g., the surface of a table, rotate the plane 3.142 rad or
+180° around either the X- or Y-axis so the restricted area is under the table.
+(TIP: Change the display of rotation from “Rotation Vector [rad]” to “RPY [°]”)
+
+If needed it is possible to offset the plane in either positive or negative Z-direction later in
+the safety settings.
+When satisfied with the position of the plane, tap OK.
+
+UR5e 127 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.1. Tool Direction Restriction
+
+Description The Tool Direction screen can be used to restrict the angle in which the tool is pointing.
+The limit is defined by a cone that has a fixed orientation with respect to the robot arm
+Base. As the robot arm moves around, tool direction is restricted so it remains within the
+defined cone. The default direction of the tool coincides with the Z-axis of the tool output
+flange. It can be customized by specifying tilt and pan angles.
+Before configuring the limit, you must define a point or plane in the robot installation. The
+feature can then be copied and its Z axis used as the center of the cone defining the limit.
+
+NOTICE
+
+Configuration of the tool direction is based on features. We recommend
+you create desired feature(s) before editing the safety configuration, as
+once the Safety Tab has been unlocked, the robot arm powers off
+making it impossible to define new features.
+
+User Manual 128 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Limit
+Prope
+rties
+
+The Tool Direction limit has three configurable properties:
+
+1. Cone center: You can select a point or plane feature from the drop-down menu, to define
+the center of the cone. The Z axis of the selected feature is used as the direction around
+which the cone is centred.
+
+2. Cone angle: You can define how many degrees the robot is allowed to deviate from center.
+
+Disabled Tool direction limit Never active
+Normal Tool direction limit Active only when safety system is in Normal mode
+Reduced Tool direction limit Active only when the safety system is in Reduced mode
+Normal &amp; Reduced Tool
+direction limit
+
+Active when the safety system is in Normal mode as
+well as when it is in Reduced mode.
+
+You can reset the values to default or undo the Tool Direction configuration by setting the copy
+feature back to &quot;Undefined&quot;.
+
+Tool
+Prope
+rties
+
+By default, the tool points in the same direction as the Z axis of the tool output flange. This can be
+modified by specifying two angles:
+
+• Tilt angle: How much to tilt the Z axis of the output flange towards the X axis of the output
+flange
+
+• Pan angle: How much to rotate the tilted Z axis around the original output flange Z axis.
+
+Alternatively, the Z axis of an existing TCP can be copied by selecting that TCP from the drop-down
+menu.
+
+UR5e 129 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.2. Tool Position Restriction
+
+Description The Tool Position screen enables more controlled restriction of tools and/or accessories
+placed on the end of the robot arm.
+
+• Robot is where you can visualize your modifications.
+
+• Tool is where you can define and configure a tool up to two tools.
+
+• Tool_1 is the default tool defined with values x=0.0, y= 0.0, z=0.0 and radius=0.0.
+These values represent the robot tool flange.
+
+Under Copy TCP, you can also select Tool Flange and cause the tool values to go back
+to 0.
+A default sphere is defined at the tool flange.
+
+User Manual 130 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User
+defined
+tools
+
+For the user defined tools, the user can change:
+
+• Radius to change the radius of the tool sphere. The radius is considered when using
+safety planes. When a point in the sphere passes a reduced mode trigger plane, the
+robot switches to Reduced mode. The safety system prevents any point on the sphere
+from passing a safety plane (see Software Safety Restrictions).
+
+• Position to change the position of the tool with respect to the tool flange of the robot.
+The position is considered for the safety functions for tool speed, tool force, stopping
+distance and safety planes.
+
+You can use an existing Tool Center Point as a base for defining new tool positions. A copy of
+the existing TCP, predefined in General menu, in TCP screen, can be accessed in Tool
+Position menu, in Copy TCP drop-down list.
+When you edit or adjust the values in the Edit Position input fields, the name of the TCP
+visible in the drop down menu changes to custom, indicating that there is a difference
+between the copied TCP and the actual limit input. The original TCP is still available in the
+drop down list and can be selected again to change the values back to the original position.
+The selection in the copy TCP drop down menu does not affect the tool name.
+Once you apply your Tool Position screen changes, if you try to modify the copied TCP in the
+TCP configuration screen, a warning icon appears to the right of the Copy TCP text. This
+indicates that the TCP is out of sync i.e. the information in the properties field is not updated
+to reflect modifications that may have been made to the TCP. The TCP can be synced by
+pressing the sync icon (see ).
+The TCP does not have to be synced in order to define and use a tool successfully.
+You can rename the tool by pressing the pencil tab next to the displayed tool name. You can
+also determine the Radius with an allowed range of 0-300 mm. The limit appears in the
+graphics pane as either a point or a sphere depending on radius size.
+
+UR5e 131 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+
+You must set a Tool Position within the safety settings, for the safety plane to trigger
+correctly when the tool TCP approaches the safety plane.
+The warning remains on the Tool Position if:
+
+• You fail to add a new tool under Tool Flange.
+
+To configure the tool position
+
+1. In the Header tap Installation.
+
+2. On the left side of the screen, under Safety, tap Tool Position.
+
+3. On the right side of the screen, select Add Tool.
+
+• The newly added tool has a default name: Tool_x.
+
+4. Tap the edit button to rename Tool_x to something more identifiable.
+
+5. Edit the Radius and Position to match that of the tool you are currently using, or use
+the Copy TCP drop-down and choose a TCP from the General&gt;TCP settings if such
+is defined.
+
+User Manual 132 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+example
+
+In this example, a Radius of 0.8mm is set and the TCP position to XYZ [20, 0, 400] in
+millimeters respectively. Optionally you can choose to ”Copy TCP” by using the drop-down
+menu if one has already been set in the -&gt;General/TCP settings. Once the Apply is tapped
+in the bottom right corner of the screen, you are DONE.
+
+The warning on the Tool Position button indicates a tool is not added under Tool Flange.
+
+Tool Position button without the warning indicates a tool (other than the Tool Flange) is
+added.
+
+UR5e 133 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result></sources>",resp_0026e4f0cd35253800690d4d2f560c8192bee8c59546b117c4,gpt-5-mini-2025-08-07,completed,1762479407.0,10525,261,10786,
+eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX3NlbWFudGljIiwiZWZmb3J0IjoibG93IiwiZmV3X3Nob3RfaWQiOiJBIiwibWF4X3Rva2VucyI6NTAwMCwibW9kZWwiOiJncHQtNS1taW5pLTIwMjUtMDgtMDciLCJxdWVzdGlvbiI6IkhvdyBtYW55IHNhZmV0eSBtb2RlcyBkb2VzIHRoZSBhcm0gaGF2ZSwgYW5kIHdoYXQgYXJlIHRoZSBuYW1lcyBvZiBlYWNoPyIsInJlYXNvbmluZ19lZmZvcnQiOiJsb3ciLCJ0b3BfayI6M319eQjdHbahqaw,2025-11-06 20:36:52 EST,2025-11-06 20:36:59 EST,7.52 Seconds,3000,openai_semantic,gpt-5-mini-2025-08-07,5000,low,3,A,A,1,"How many safety modes does the arm have, and what are the names of each?","The robot arm has three safety modes. Normal mode, reduced mode, and recovery mode. ","There are two safety modes: Normal and Reduced. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf] 
+
+- The Reduced configuration is activated by Trigger Reduced planes or by a safety input; both Normal and Reduced limits can be configured separately. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]",013__L1__13._Emergency_Events__pp181-189.pdf;010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf;010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf,"<sources><result file_id='file-8i37d9zxCTmvxgnMidtQrQ' filename='013__L1__13._Emergency_Events__pp181-189.pdf' score='0.5174'><content>13. Emergency Events
+Description Follow the instructions here to handle emergency situations, such as activating the
+
+emergency stop using the red push-button. This section also describes how to manually
+move the system without power.
+
+13.1. Emergency Stop
+
+Description The Emergency Stop or E-stop is the red push-button located on the Teach Pendant.
+Press the emergency stop push-button to stop all robot motion. Activating the
+emergency stop push-button causes a stop category one (IEC 60204-1).
+Emergency stops are not safeguards (ISO 12100).
+
+Emergency stops are complementary protective measures that do not prevent injury.
+The risk assessment of the robot application determines if additional emergency stop
+push-buttons are required. The emergency stop function and the actuating device must
+comply with ISO 13850.
+After an emergency stop is actuated, the push-button latches in that setting. As such,
+each time an emergency stop is activated, it must be manually reset at the push-button
+that initiated the stop.
+Before resetting the emergency stop push-button, you must visually identify and assess
+the reason the E-stop was first activated. Visual assessment of all the equipment in the
+application is required. Once the problem is solved, reset the emergency stop push-
+button.
+
+To reset the emergency stop push-button
+
+1. Hold the push-button and twist clockwise until the latching disengages.
+
+You should feel when the latching is disengaged, indicating the push-button is
+reset.
+
+2. Verify the situation and whether to reset the emergency stop.
+
+3. After resetting the emergency stop, restore power to the robot and resume
+operation.
+
+User Manual 182 UR5e
+
+13. Emergency Events
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.2. MovementWithout Drive Power
+
+Description In the unlikely event of an emergency, when powering the robot is either impossible or
+unwanted, you can use forced back-driving to move the robot arm.
+
+To perform forced back-driving you must push, or pull, the robot arm hard to move the
+joint. Each joint brake has a friction clutch that enables movement during high forced
+torque.
+
+Performing forced back-driving requires high force and cannot be performed by one
+person alone. In clamping situations, two or more people are required to do the forced
+back-driving. In some situations, two or more people are required to disassemble the
+robot arm.
+
+See the Service Manual for information about how to disassemble the robot.
+
+WARNING
+
+Risks due to an unsupported robot arm breaking or falling can cause
+injury or death.
+
+• Support the robot arm before removing power.
+
+NOTICE
+
+Moving the robot arm manually is intended for emergency and service
+purposes only. Unnecessary moving of the robot arm can lead to
+property damage.
+
+• Do not move the joint more than 160 degrees, to ensure the
+robot can find its original physical position.
+
+• Do not move any joint more than necessary.
+
+UR5e 183 User Manual
+
+13. Emergency Events
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3. Modes
+
+Description You access and activate different modes using Teach Pendant or the Dashboard
+Server. If an external mode selector is integrated, it control the modes - not PolyScope or
+the Dashboard Server.
+
+Automatic Mode Once activated, the robot can only execute a program of pre-defined
+tasks. You cannot modify or save programs and installations.
+Manual Mode Once activated, you can program the robot. You can modify and save
+programs and installations.
+
+High Speed Manual Mode can be used. It allows both tool speed and elbow speed to
+temporarily exceed 250 mm/s, while a hold-to-run is used.
+Hold-to-run is performed by continuous contact with the Speed Slider.
+
+The robot performs a Safeguard Stop in Manual mode, if a Three-Position Enabling
+Device is configured, and either released (not pressed) or it is fully compressed.
+
+Switching between Automatic mode to Manual mode requires the Three-Position
+Enabling Device to be fully released and pressed again to allow the robot to move.
+When using High Speed Manual Mode, use safety joint limits (see Joint Limits) or safety
+planes (see Safety Planes) to restrict the robot’s moving space.
+
+Mode
+switching
+
+Operational mode Manual Automatic
+
+Freedrive x *
+Move robot with arrows on Move Tab x *
+Edit &amp; save program &amp; installation x
+
+Execute Programs
+Reduced
+speed**
+
+*
+
+Start program from selected node x
+*Only when no Three-Position Enabling Device is configured.
+** If a Three-Position Enabling Device is configured, the robot operates at Manual
+Reduced Speed unless High Speed Manual Mode is activated.
+
+User Manual 184 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Notice when
+switching
+mode
+
+NOTICE
+• Some UR robot sizes might not be equipped with a Three-Position
+Enabling Device. If the risk assessment requires the enabling
+device, a 3PE Teach Pendant must be used.
+
+WARNING
+• Any suspended safeguards must be returned to full functionality
+before selecting Automatic Mode.
+
+• Wherever possible, Manual Mode shall only be used with all
+persons located outside the safeguarded space.
+
+• If an external mode selector is used, it must be placed outside the
+safeguarded space.
+
+• No-one is to enter, or be within, the safeguarded space in Automatic
+Mode, unless safeguarding is used or the collaborative application
+is validated for power and force limiting (PFL).
+
+To Switch
+Modes: PolyScope
+
+1. In the Header, select the profile icon.
+
+• Automatic indicates the operational mode of the robot is set to
+Automatic.
+
+• Manual indicates the operational mode of the robot is set to Manual.
+
+Using the
+Dashboard
+Server
+
+1. Connect to the Dashboard server.
+
+2. Use the Set Operational Mode commands.
+
+• Set Operational Mode Automatic
+
+• Set Operational Mode Manual
+
+• Clear Operational Mode
+
+Three-Position
+Enabling
+Device
+
+When a Three-Position Enabling Device is used and the robot is in Manual Mode,
+movement requires pressing the Three-Position Enabling Device to the center-on
+position. The Three-Position Enabling Device has no effect in Automatic Mode.
+
+A 3PE Teach Pendant is recommended for programming. If another person can be within
+the safeguarded space when in Manual Mode, an additional device can be integrated and
+configured for the additional person&#x27;s use.
+
+UR5e 185 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3.1. RecoveryMode
+
+Description When a safety limit is exceeded, Recovery Mode is automatically activated, allowing the
+robot arm to be moved. Recovery Mode is a type of Manual Mode .
+You cannot run robot programs when Recovery Mode is active.
+
+During Recovery Mode, the robot arm is moved to be within joint limits, using either
+Freedrive or the Move tab in PolyScope.
+
+Safety limits
+of Recovery
+Mode
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery.
+
+13.3.2. Backdrive
+
+Description Backdrive is a Manual Mode used to force specific joints to a desired position without
+releasing all brakes in the robot arm.
+This is sometimes necessary if the robot arm is close to collision and the vibrations that
+accompany a full restart are not desired.
+The robot joints feel heavy to move, while Backdrive is in use.
+
+You can use any of the following sequences to enable Backdrive:
+
+• 3PE Teach Pendant
+
+• 3PE device/switch
+
+• Freedrive on robot
+
+User Manual 186 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+3PE Teach
+Pendant
+
+To use the 3PE TP button to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as light-press is maintained on the 3PE button, Backdrive is enabled,
+allowing the arm to move. 
+
+3PE
+device/switch
+
+To use a 3PE device/switch to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to System 3PE Stop.
+
+3. Press and hold the 3PE device/switch.
+The robot state changes to Backdrive.
+
+4. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on both the 3PE device/switch and the 3PE TP
+button, Backdrive is enabled, allowing the arm to move. 
+
+Freedrive on
+robot
+
+To use Freedrive on robot to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, press and hold the Freedrive
+on robot.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on the Freedrive on robot, Backdrive is enabled,
+allowing the arm to move. 
+
+UR5e 187 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Backdrive Inspection
+
+Description If the robot is close to colliding with something, you can use Backdrive to move the robot
+arm to a safe position before initializing.
+
+3PE Teach Pendant
+
+User Manual 188 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Enable
+Backdrive
+
+1. Press ON to enable power. Status changes to Robot Active
+
+2. Press and hold Freedrive. Status changes to Backdrive
+
+3. Move robot as in Freedrive mode. Joint brakes are released where needed once
+the Freedrive button is activated.
+
+NOTICE
+
+In Backdrive Mode the robot is “heavy” to move around.
+
+MANDATORY ACTION
+
+You must test Backdrive mode on all joints.
+
+Safety
+settings
+
+Verify the robot safety settings comply with the robot installation risk assessment.
+
+Additional
+safety inputs
+and outputs
+are still
+functioning
+
+Check which safety inputs and outputs are active and that they can be triggered via
+PolyScope or external devices.
+
+UR5e 189 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User Manual 190 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-EJroE1YhVEfeKiuXQvtUA3' filename='010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf' score='0.4992'><content>10.4. Software Safety Restrictions
+
+Description
+NOTICE
+
+Configuring planes is entirely based on features. We recommend you
+create and name all features before editing the safety configuration, as
+the robot is powered off once the Safety Tab has been unlocked and
+moving the robot will be impossible.
+
+Safety planes restrict robot workspace. You can define up to eight safety planes,
+restricting the robot tool and elbow. You can also restrict elbow movement for each
+safety plane and disable by deselecting the checkbox. Before configuring safety planes,
+you must define a feature in the robot installation. The feature can then be copied into the
+safety plane screen and configured.
+
+WARNING
+
+Defining safety planes only limits the defined Tool spheres and elbow,
+not the overall limit for the robot arm. This means that specifying a
+safety plane, does not guarantee that other parts of the robot arm will
+obey this restriction.
+
+Saf
+ety
+Pla
+nes
+Mod
+es
+
+You can configure each plane with restrictive Modes using the icons listed below.
+
+Disabled The safety plane is never active in this state.
+
+Normal
+When the safety system is in Normal mode, a normal plane is
+active and it acts as a strict limit on the position.
+
+Reduced
+When the safety system is in Reduced mode, a reduced mode
+plane is active and it acts as a strict limit on the position.
+
+Normal &amp; Reduced
+When the safety system is either in Normal or Reduced mode,
+a normal and reduced mode plane is active and acts as a strict
+limit on the position.
+
+Trigger Reduced
+Mode
+
+The safety plane causes the safety system to switch to
+Reduced mode if the robot Tool or Elbow is positioned beyond
+it.
+
+Show
+Pressing this icon hides or shows the safety plane in the
+graphics pane.
+
+Delete
+Deletes the created safety plane. There is no undo/redo
+action. If a plane is deleted in error, it must be remade.
+
+Rename Pressing this icon allows you to rename the plane.
+
+User Manual 122 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Configuring
+safety planes
+
+1. In your PolyScope header, tap Installation.
+
+2. In the Side Menu on the left of the screen, tap Safety and select Planes.
+
+3. On the top right of the screen, in the Planes field, tap Add plane.
+
+4. On the bottom right of the screen, in the Properties field, set up Name, Copy
+Feature and Restrictions.
+
+Copy
+Feature
+
+In Copy Feature, only Undefined and Base are available. You can reset a configured safety
+plane by selecting Undefined
+If the copied feature is modified in the Features screen, a warning icon appears to the right of
+the Copy Feature text. This indicates that the feature is out of sync i.e. the information in the
+properties card is not updated to reflect the modifications that may have been made to the
+Feature.
+
+UR5e 123 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Col
+or
+Cod
+es
+
+Gray Plane is configured but disabled (A)
+Yellow &amp; Black Normal Plane (B)
+Blue &amp; Green Trigger Plane (C)
+
+Black Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Normal Planes)
+
+Green Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Trigger Planes)
+
+Gray Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Disabled Planes)
+
+User Manual 124 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Elbow
+Restriction
+
+You can enable Restrict Elbow to prevent robot elbow joint from passing through any of
+your defined planes. Disable Restrict Elbow for elbow to pass through planes.
+The diameter of the ball that restricts the elbow is different for each size of robot.
+
+UR3e 0.1 m
+UR5e 0.13 m
+UR10e / UR16e 0.15 m
+UR20 / UR30 0.19 m
+
+The information about the specific radius can be found in the urcontrol.conf file on the robot
+under the section [Elbow].
+
+Tool Flange
+Restriction
+
+Restricting the tool flange prevents the tool flange and the attached tool from crossing a
+safety plane. When you restrict the tool flange, the unrestricted area is the area inside of
+the safety plane, where the tool flange can operate normally.
+The tool flange cannot cross the restricted area, outside of the safety plane.
+
+Removing the restriction allows the tool flange to go beyond the safety plane, to the
+restricted area, while the attached tool remains inside of the safety plane.
+
+You can remove the tool flange restriction when working with a large tool off-set. This will
+allow extra distance for the tool to move.
+
+Restricting the tool flange requires the creation of a plane feature. The plane feature is
+used to set up a safety plane later in the safety settings.
+
+UR5e 125 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Adding a
+plane feature
+example
+
+Displacement offsets the plane in either the positive or negative direction along the plane
+normal (Z-axis of the plane feature).
+Deselect the checkbox for the Elbow and the Tool Flange so they do not trigger the safety
+plane. The Elbow can remain checked as needed by your application.
+
+The unrestricted tool flange can cross a safety plane, even when no tool is defined.
+If no tool is added, a warning on the Tool Position button prompts you to correctly define the
+tool.
+When working with an unrestricted tool flange and a defined tool, it is ensured that the
+dangerous part of the tool can&#x27;t go above and/or beyond certain area. The unrestricted tool
+flange can be used for any application where safety planes are needed, like Welding or
+Assembly.
+
+User Manual 126 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool flange
+restriction
+example
+
+In this example, an X-Y-plane is created with an offset of 300mm along the positive Z-axis
+with reference to the base feature.
+The Z-axis of the plane can be thought of as “pointing” towards the restricted area.
+If the safety plane is needed on e.g., the surface of a table, rotate the plane 3.142 rad or
+180° around either the X- or Y-axis so the restricted area is under the table.
+(TIP: Change the display of rotation from “Rotation Vector [rad]” to “RPY [°]”)
+
+If needed it is possible to offset the plane in either positive or negative Z-direction later in
+the safety settings.
+When satisfied with the position of the plane, tap OK.
+
+UR5e 127 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.1. Tool Direction Restriction
+
+Description The Tool Direction screen can be used to restrict the angle in which the tool is pointing.
+The limit is defined by a cone that has a fixed orientation with respect to the robot arm
+Base. As the robot arm moves around, tool direction is restricted so it remains within the
+defined cone. The default direction of the tool coincides with the Z-axis of the tool output
+flange. It can be customized by specifying tilt and pan angles.
+Before configuring the limit, you must define a point or plane in the robot installation. The
+feature can then be copied and its Z axis used as the center of the cone defining the limit.
+
+NOTICE
+
+Configuration of the tool direction is based on features. We recommend
+you create desired feature(s) before editing the safety configuration, as
+once the Safety Tab has been unlocked, the robot arm powers off
+making it impossible to define new features.
+
+User Manual 128 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Limit
+Prope
+rties
+
+The Tool Direction limit has three configurable properties:
+
+1. Cone center: You can select a point or plane feature from the drop-down menu, to define
+the center of the cone. The Z axis of the selected feature is used as the direction around
+which the cone is centred.
+
+2. Cone angle: You can define how many degrees the robot is allowed to deviate from center.
+
+Disabled Tool direction limit Never active
+Normal Tool direction limit Active only when safety system is in Normal mode
+Reduced Tool direction limit Active only when the safety system is in Reduced mode
+Normal &amp; Reduced Tool
+direction limit
+
+Active when the safety system is in Normal mode as
+well as when it is in Reduced mode.
+
+You can reset the values to default or undo the Tool Direction configuration by setting the copy
+feature back to &quot;Undefined&quot;.
+
+Tool
+Prope
+rties
+
+By default, the tool points in the same direction as the Z axis of the tool output flange. This can be
+modified by specifying two angles:
+
+• Tilt angle: How much to tilt the Z axis of the output flange towards the X axis of the output
+flange
+
+• Pan angle: How much to rotate the tilted Z axis around the original output flange Z axis.
+
+Alternatively, the Z axis of an existing TCP can be copied by selecting that TCP from the drop-down
+menu.
+
+UR5e 129 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.2. Tool Position Restriction
+
+Description The Tool Position screen enables more controlled restriction of tools and/or accessories
+placed on the end of the robot arm.
+
+• Robot is where you can visualize your modifications.
+
+• Tool is where you can define and configure a tool up to two tools.
+
+• Tool_1 is the default tool defined with values x=0.0, y= 0.0, z=0.0 and radius=0.0.
+These values represent the robot tool flange.
+
+Under Copy TCP, you can also select Tool Flange and cause the tool values to go back
+to 0.
+A default sphere is defined at the tool flange.
+
+User Manual 130 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User
+defined
+tools
+
+For the user defined tools, the user can change:
+
+• Radius to change the radius of the tool sphere. The radius is considered when using
+safety planes. When a point in the sphere passes a reduced mode trigger plane, the
+robot switches to Reduced mode. The safety system prevents any point on the sphere
+from passing a safety plane (see Software Safety Restrictions).
+
+• Position to change the position of the tool with respect to the tool flange of the robot.
+The position is considered for the safety functions for tool speed, tool force, stopping
+distance and safety planes.
+
+You can use an existing Tool Center Point as a base for defining new tool positions. A copy of
+the existing TCP, predefined in General menu, in TCP screen, can be accessed in Tool
+Position menu, in Copy TCP drop-down list.
+When you edit or adjust the values in the Edit Position input fields, the name of the TCP
+visible in the drop down menu changes to custom, indicating that there is a difference
+between the copied TCP and the actual limit input. The original TCP is still available in the
+drop down list and can be selected again to change the values back to the original position.
+The selection in the copy TCP drop down menu does not affect the tool name.
+Once you apply your Tool Position screen changes, if you try to modify the copied TCP in the
+TCP configuration screen, a warning icon appears to the right of the Copy TCP text. This
+indicates that the TCP is out of sync i.e. the information in the properties field is not updated
+to reflect modifications that may have been made to the TCP. The TCP can be synced by
+pressing the sync icon (see ).
+The TCP does not have to be synced in order to define and use a tool successfully.
+You can rename the tool by pressing the pencil tab next to the displayed tool name. You can
+also determine the Radius with an allowed range of 0-300 mm. The limit appears in the
+graphics pane as either a point or a sphere depending on radius size.
+
+UR5e 131 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+
+You must set a Tool Position within the safety settings, for the safety plane to trigger
+correctly when the tool TCP approaches the safety plane.
+The warning remains on the Tool Position if:
+
+• You fail to add a new tool under Tool Flange.
+
+To configure the tool position
+
+1. In the Header tap Installation.
+
+2. On the left side of the screen, under Safety, tap Tool Position.
+
+3. On the right side of the screen, select Add Tool.
+
+• The newly added tool has a default name: Tool_x.
+
+4. Tap the edit button to rename Tool_x to something more identifiable.
+
+5. Edit the Radius and Position to match that of the tool you are currently using, or use
+the Copy TCP drop-down and choose a TCP from the General&gt;TCP settings if such
+is defined.
+
+User Manual 132 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+example
+
+In this example, a Radius of 0.8mm is set and the TCP position to XYZ [20, 0, 400] in
+millimeters respectively. Optionally you can choose to ”Copy TCP” by using the drop-down
+menu if one has already been set in the -&gt;General/TCP settings. Once the Apply is tapped
+in the bottom right corner of the screen, you are DONE.
+
+The warning on the Tool Position button indicates a tool is not added under Tool Flange.
+
+Tool Position button without the warning indicates a tool (other than the Tool Flange) is
+added.
+
+UR5e 133 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-Fw98fbrtomcR56SJuRFM8n' filename='010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf' score='0.4862'><content>10.2. Safety-related Functions and Interfaces
+
+Description Universal Robots robots are equipped with a range of built-in safety functions as well as
+safety I/O, digital and analog control signals to or from the electrical interface, to connect
+to other machines and additional protective devices. Each safety function and I/O is
+constructed according to EN ISO13849-1 (see Certifications) with Performance Level d
+(PLd) using a category 3 architecture.
+See Software Safety Configuration for configuration of the safety functions, inputs and
+outputs in the user interface. See Safety I/O for descriptions on how to connect safety
+devices to I/O.
+
+WARNING
+
+The use of safety configuration parameters different from those
+determined as necessary for risk reduction, can result in hazards that
+are not reasonably eliminated, or risks that are not sufficiently reduced.
+
+• Ensure tools and grippers are connected correctly to avoid
+hazards due to interruption of power.
+
+WARNING: ELECTRICITY
+
+Programmer and/or wiring errors can cause the voltage to change from
+12V to 24V leading to fire damage to equipment.
+
+• Verify the use of 12V and proceed with caution.
+
+Additional
+Information NOTICE
+
+• The use and configuration of safety functions and interfaces must
+follow the risk assessment procedures for each robot application.
+(see chapter Safety section Safety-related Functions and
+Interfaces)
+
+• The stopping time should be taken into account as part of the
+application risk assessment
+
+• If the robot detects a fault or violation in the safety system (e.g. if
+one of the wires in the Emergency Stop circuit is cut or a safety
+limit is exceeded), then a Stop Category 0 is initiated.
+
+NOTICE
+
+The end effector is not protected by the UR safety system. The
+functioning of the end effector and/or connection cable is not monitored
+
+User Manual 100 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.1. Configurable Safety Functions
+
+Description Universal Robots robot safety functions, as listed in the table below, are in the robot but
+are meant to control the robot system i.e. the robot with its attached tool/end effector.
+The robot safety functions are used to reduce robot system risks determined by the risk
+assessment. Positions and speeds are relative to the base of the robot.
+
+Safety
+Function
+
+Description
+
+Joint Position
+Limit
+
+Sets upper and lower limits for the allowed joint positions.
+
+Joint Speed
+Limit
+
+Sets an upper limit for joint speed.
+
+Safety
+Planes
+
+Defines planes, in space, that limit robot position. Safety planes limit
+either the tool/end effector alone or both the tool/end effector and the
+elbow.
+
+Tool
+Orientation
+
+Defines allowable orientation limits for the tool.
+
+Speed Limit
+Limits maximum robot speed. The speed is limited at the elbow, at the
+tool/end effector flange, and at the center of the user-defined tool/end
+effector positions.
+
+Force Limit
+Limits maximum force exerted by the robot tool/end effector and elbow
+in clamping situations. The force is limited at the tool/end effector,
+elbow flange and center of the user-defined tool/end effector positions.
+
+Momentum
+Limit
+
+Limits maximummomentum of the robot.
+
+Power Limit Limits mechanical work performed by the robot.
+Stopping
+Time Limit
+
+Limits maximum time the robot uses for stopping after a robot stop is
+initiated.1
+
+Stopping
+Distance
+Limit
+
+Limits maximum distance travelled by the robot after a robot stop is
+initiated.
+
+Safety
+Function
+
+When performing the application risk assessment, it is necessary to take into account the
+motion of the robot after a stop has been initiated. In order to ease this process, the safety
+functions Stopping Time Limit and Stopping Distance Limit can be used.
+These safety functions dynamically reduces the speed of the robot motion such that it can
+always be stopped within the limits. The joint position limits, the safety planes and the
+tool/end effector orientation limits take the expected stopping distance travel into account
+i.e. the robot motion will slow down before the limit is reached.
+The functional safety can be summarized as:
+
+1Robot stop was previously known as &quot;Protective stop&quot;.
+
+UR5e 101 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety Function Accuracy Performance Level Category
+
+Emergency Stop – d 3
+Safeguard Stop – d 3
+Joint Position Limit 5 ° d 3
+Joint Speed Limit 1.15 °/s d 3
+Safety Planes 40 mm d 3
+Tool Orientation 3 ° d 3
+Speed Limit 50 mm/s d 3
+Force Limit 25 N d 3
+Momentum Limit 3 kg m/s d 3
+Power Limit 10 W d 3
+Stopping Time Limit 50 ms d 3
+Stopping Distance Limit 40 mm d 3
+Safe Home 1.7 ° d 3
+
+Warnings
+CAUTION
+
+Failure to configure the maximum speed limit can result in hazardous
+situations.
+
+• If the robot is used in manual hand-guiding applications with linear
+movements, the speed limit must be set to maximum 250 mm/s for
+the tool/end effector and elbow unless a risk assessment shows
+that higher speeds are acceptable. This will prevent fast
+movements of the robot elbow near singularities.
+
+NOTICE
+
+There are two exceptions to the force limiting function that are important
+when designing an application.
+As the robot stretches out, the knee-joint effect can give high forces in the
+radial direction (away from the base) at low speeds. Similarly, the short
+leverage arm, when the tool/end effector is close to the base and moving
+around the base, can cause high forces at low speeds.
+
+User Manual 102 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Workspace
+
+Front Tilted
+
+Due to the physical properties of the robot arm, certain workspace areas require attention
+regarding pinching hazards. One area (left) is defined for radial motions when the wrist 1
+joint is at least 450 mm from the base of the robot. The other area (right) is within 200 mm
+
+of the base of the robot, when moving tangentially.
+
+Placing the robot in certain areas can create pinching hazards that can lead to injury.
+
+UR5e 103 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+inputs
+
+The robot also has the following safety inputs:
+
+Safety Input Description
+
+Emergency
+Stop Button
+
+Performs a Stop Category 1 (IEC 60204-1) informing other machines using
+the System Emergency Stop output, if that output is defined. A stop is
+initiated in anything connected to the output.
+
+Robot
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) via Control Box input, informing
+other machines using the System Emergency Stop output, if that output is
+defined.
+
+System
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) on robot only, in all modes and
+takes precedence over all other commands.
+
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in all modes, except when using
+a 3-Position Enabling Device and a mode selector - then when in Manual
+Mode, the Safeguard Stop can be set to only function in Automatic Mode.
+
+Automatic
+Mode
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in Automatic mode ONLY.
+Automatic Mode Safeguard Stop can only be selected when a Three-
+Position Enabling Device is configured and installed.
+
+Safeguard
+Reset
+
+Returns from the Safeguard Stop state, when a rising edge on the
+Safeguard Reset input occurs.
+
+Reduced
+Mode
+
+Transitions the safety system to use the Reduced mode limits.
+
+Three-
+Position
+Enabling
+Device
+
+Initiates a Stop Category 2 (IEC 60204-1) when the enabling device is fully
+pressed or fully released in manual mode only. Three-Position Enabling
+Device Stop is triggered when an input goes low. It is unaffected by a
+Safeguard Reset.
+
+Freedrive on
+robot
+
+Enables freedrive, when the robot is not in Automatic Mode.
+
+Operational
+Mode
+
+Switches between Operational modes. The robot is in Automatic mode
+when input is low, Manual mode when input is high.
+
+Automatic
+Mode
+Safeguard
+Reset
+
+Returns from the Automatic Mode Safeguard Stop state, when a rising
+edge on the Automatic Mode Safeguard Reset input occurs.
+
+User Manual 104 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+outputs
+
+For interfacing with other machines, the robot is equipped with the following safety outputs:
+
+Safety
+Output
+
+Description
+
+System
+Emergency
+Stop
+
+While this signal is logic low, the Robot Emergency Stop input is logic low
+or the Emergency Stop button is pressed.
+
+Robot
+Moving
+
+While this signal is logic high, no single joint of the robot moves more than
+0.1 rad/s.
+
+Robot Not
+Stopping
+
+Logic high when the robot is stopped or in the process of stopping due to
+an Emergency Stop or Safeguard Stop. Otherwise it will be logic low.
+
+Reduced Logic low when the safety system is in Reduced Mode.
+Not Reduced Logic low when the system is not in Reduced Mode.
+Safe Home Logic high when robot is in the configured Safe Home Position.
+
+All safety I/O are dual channel, meaning they are safe when low (e.g., the Emergency Stop is
+active when the signals are low).
+
+10.2.2. Safety Functions
+
+Description The safety system acts by monitoring if any of the safety limits are exceeded or if an
+Emergency Stop or a Safeguard Stop is initiated.
+The reactions of the safety system are:
+
+Trigger Reaction
+
+Emergency Stop Stop Category 1
+Safeguard Stop Stop Category 2
+3PE Stop (if a 3-Position Enabling device is connected) Stop Category 2
+Limit Violation Stop Category 0
+Fault Detection Stop Category 0
+
+NOTICE
+
+If the safety system detects any fault or violation, all safety outputs re-
+set to low.
+
+UR5e 105 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.3. Safety Parameter Set
+
+Description The safety system has the following set of configurable safety parameters:
+
+• Normal
+
+• Reduced
+
+Normal and
+Reduced
+
+You can set up the safety limits for each set of safety parameters, creating distinct
+configurations for normal, or higher settings, and reduced. The reduced configuration is
+active when the tool/end effector is positioned on the reduced side of a Trigger Reduced
+Plane, or when the reduced configuration is externally triggered by a safety input.
+Using a plane to trigger the Reduced configuration: When the robot arm moves from the
+side of the trigger plane configured with reduced safety parameters, to the side that is
+configured with normal safety parameters, there is a 20 mm area around the trigger plane
+where both normal and reduced limits are allowed. This area around the trigger plane
+prevents nuisance safety stops when the robot is exactly at the limit.
+Using an input to trigger the Reduced configuration: When a safety input starts, or stops,
+the reduced configuration, up to 500 ms can elapse before the new limit values become
+active. This can happen in either of the following circumstances:
+
+• Switching from the reduced configuration to normal
+
+• Switching from the normal configuration to reduced
+
+The robot arm adapts to the new safety limits within the 500 ms.
+
+User Manual 106 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Recovery When a safety limit is exceeded, the safety system must be restarted. For example, if a joint
+position limit is outside a safety limit, at start-up, Recovery is activated.
+You cannot run programs for the robot when recovery is activated, but the robot arm can be
+manually moved back within limits using Freedrive, or by using the Move tab in PolyScope.
+The safety limits for Recovery are:
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery mode.
+
+UR5e 107 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result></sources>",resp_0438db8c2ba83d9900690d4d37514c819c9162d44ffe1aeb46,gpt-5-mini-2025-08-07,completed,1762479415.0,10525,253,10778,
+eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX2tleXdvcmQiLCJlZmZvcnQiOiJsb3ciLCJmZXdfc2hvdF9pZCI6IkEiLCJtYXhfdG9rZW5zIjo1MDAwLCJtb2RlbCI6ImdwdC01LW1pbmktMjAyNS0wOC0wNyIsInF1ZXN0aW9uIjoiSG93IG1hbnkgc2FmZXR5IG1vZGVzIGRvZXMgdGhlIGFybSBoYXZlLCBhbmQgd2hhdCBhcmUgdGhlIG5hbWVzIG9mIGVhY2g_IiwicmVhc29uaW5nX2VmZm9ydCI6ImxvdyIsInRvcF9rIjozfSwicnVuX3V1aWQiOiJiMGYzNmUyYy0wYzQ3LTRiNDItODFlMC1mYTlhOTRmY2JiMzkifVEFhb6vEP_Q,2025-11-06 20:39:12 EST,2025-11-06 20:39:22 EST,10.09 Seconds,3000,openai_keyword,gpt-5-mini-2025-08-07,5000,low,3,A,A,1,"How many safety modes does the arm have, and what are the names of each?","The robot arm has three safety modes. Normal mode, reduced mode, and recovery mode. ","There are two safety modes: Normal and Reduced. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]
+
+Supporting points:
+- The safety system has configurable safety parameter sets named Normal and Reduced; the reduced configuration is active when triggered by a plane or an external safety input. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]
+- When switching between these modes the robot adapts to the new safety limits within up to 500 ms. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]",013__L1__13._Emergency_Events__pp181-189.pdf;010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf;010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf,"<sources><result file_id='file-8i37d9zxCTmvxgnMidtQrQ' filename='013__L1__13._Emergency_Events__pp181-189.pdf' score='0.5988'><content>13. Emergency Events
+Description Follow the instructions here to handle emergency situations, such as activating the
+
+emergency stop using the red push-button. This section also describes how to manually
+move the system without power.
+
+13.1. Emergency Stop
+
+Description The Emergency Stop or E-stop is the red push-button located on the Teach Pendant.
+Press the emergency stop push-button to stop all robot motion. Activating the
+emergency stop push-button causes a stop category one (IEC 60204-1).
+Emergency stops are not safeguards (ISO 12100).
+
+Emergency stops are complementary protective measures that do not prevent injury.
+The risk assessment of the robot application determines if additional emergency stop
+push-buttons are required. The emergency stop function and the actuating device must
+comply with ISO 13850.
+After an emergency stop is actuated, the push-button latches in that setting. As such,
+each time an emergency stop is activated, it must be manually reset at the push-button
+that initiated the stop.
+Before resetting the emergency stop push-button, you must visually identify and assess
+the reason the E-stop was first activated. Visual assessment of all the equipment in the
+application is required. Once the problem is solved, reset the emergency stop push-
+button.
+
+To reset the emergency stop push-button
+
+1. Hold the push-button and twist clockwise until the latching disengages.
+
+You should feel when the latching is disengaged, indicating the push-button is
+reset.
+
+2. Verify the situation and whether to reset the emergency stop.
+
+3. After resetting the emergency stop, restore power to the robot and resume
+operation.
+
+User Manual 182 UR5e
+
+13. Emergency Events
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.2. MovementWithout Drive Power
+
+Description In the unlikely event of an emergency, when powering the robot is either impossible or
+unwanted, you can use forced back-driving to move the robot arm.
+
+To perform forced back-driving you must push, or pull, the robot arm hard to move the
+joint. Each joint brake has a friction clutch that enables movement during high forced
+torque.
+
+Performing forced back-driving requires high force and cannot be performed by one
+person alone. In clamping situations, two or more people are required to do the forced
+back-driving. In some situations, two or more people are required to disassemble the
+robot arm.
+
+See the Service Manual for information about how to disassemble the robot.
+
+WARNING
+
+Risks due to an unsupported robot arm breaking or falling can cause
+injury or death.
+
+• Support the robot arm before removing power.
+
+NOTICE
+
+Moving the robot arm manually is intended for emergency and service
+purposes only. Unnecessary moving of the robot arm can lead to
+property damage.
+
+• Do not move the joint more than 160 degrees, to ensure the
+robot can find its original physical position.
+
+• Do not move any joint more than necessary.
+
+UR5e 183 User Manual
+
+13. Emergency Events
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3. Modes
+
+Description You access and activate different modes using Teach Pendant or the Dashboard
+Server. If an external mode selector is integrated, it control the modes - not PolyScope or
+the Dashboard Server.
+
+Automatic Mode Once activated, the robot can only execute a program of pre-defined
+tasks. You cannot modify or save programs and installations.
+Manual Mode Once activated, you can program the robot. You can modify and save
+programs and installations.
+
+High Speed Manual Mode can be used. It allows both tool speed and elbow speed to
+temporarily exceed 250 mm/s, while a hold-to-run is used.
+Hold-to-run is performed by continuous contact with the Speed Slider.
+
+The robot performs a Safeguard Stop in Manual mode, if a Three-Position Enabling
+Device is configured, and either released (not pressed) or it is fully compressed.
+
+Switching between Automatic mode to Manual mode requires the Three-Position
+Enabling Device to be fully released and pressed again to allow the robot to move.
+When using High Speed Manual Mode, use safety joint limits (see Joint Limits) or safety
+planes (see Safety Planes) to restrict the robot’s moving space.
+
+Mode
+switching
+
+Operational mode Manual Automatic
+
+Freedrive x *
+Move robot with arrows on Move Tab x *
+Edit &amp; save program &amp; installation x
+
+Execute Programs
+Reduced
+speed**
+
+*
+
+Start program from selected node x
+*Only when no Three-Position Enabling Device is configured.
+** If a Three-Position Enabling Device is configured, the robot operates at Manual
+Reduced Speed unless High Speed Manual Mode is activated.
+
+User Manual 184 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Notice when
+switching
+mode
+
+NOTICE
+• Some UR robot sizes might not be equipped with a Three-Position
+Enabling Device. If the risk assessment requires the enabling
+device, a 3PE Teach Pendant must be used.
+
+WARNING
+• Any suspended safeguards must be returned to full functionality
+before selecting Automatic Mode.
+
+• Wherever possible, Manual Mode shall only be used with all
+persons located outside the safeguarded space.
+
+• If an external mode selector is used, it must be placed outside the
+safeguarded space.
+
+• No-one is to enter, or be within, the safeguarded space in Automatic
+Mode, unless safeguarding is used or the collaborative application
+is validated for power and force limiting (PFL).
+
+To Switch
+Modes: PolyScope
+
+1. In the Header, select the profile icon.
+
+• Automatic indicates the operational mode of the robot is set to
+Automatic.
+
+• Manual indicates the operational mode of the robot is set to Manual.
+
+Using the
+Dashboard
+Server
+
+1. Connect to the Dashboard server.
+
+2. Use the Set Operational Mode commands.
+
+• Set Operational Mode Automatic
+
+• Set Operational Mode Manual
+
+• Clear Operational Mode
+
+Three-Position
+Enabling
+Device
+
+When a Three-Position Enabling Device is used and the robot is in Manual Mode,
+movement requires pressing the Three-Position Enabling Device to the center-on
+position. The Three-Position Enabling Device has no effect in Automatic Mode.
+
+A 3PE Teach Pendant is recommended for programming. If another person can be within
+the safeguarded space when in Manual Mode, an additional device can be integrated and
+configured for the additional person&#x27;s use.
+
+UR5e 185 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3.1. RecoveryMode
+
+Description When a safety limit is exceeded, Recovery Mode is automatically activated, allowing the
+robot arm to be moved. Recovery Mode is a type of Manual Mode .
+You cannot run robot programs when Recovery Mode is active.
+
+During Recovery Mode, the robot arm is moved to be within joint limits, using either
+Freedrive or the Move tab in PolyScope.
+
+Safety limits
+of Recovery
+Mode
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery.
+
+13.3.2. Backdrive
+
+Description Backdrive is a Manual Mode used to force specific joints to a desired position without
+releasing all brakes in the robot arm.
+This is sometimes necessary if the robot arm is close to collision and the vibrations that
+accompany a full restart are not desired.
+The robot joints feel heavy to move, while Backdrive is in use.
+
+You can use any of the following sequences to enable Backdrive:
+
+• 3PE Teach Pendant
+
+• 3PE device/switch
+
+• Freedrive on robot
+
+User Manual 186 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+3PE Teach
+Pendant
+
+To use the 3PE TP button to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as light-press is maintained on the 3PE button, Backdrive is enabled,
+allowing the arm to move. 
+
+3PE
+device/switch
+
+To use a 3PE device/switch to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to System 3PE Stop.
+
+3. Press and hold the 3PE device/switch.
+The robot state changes to Backdrive.
+
+4. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on both the 3PE device/switch and the 3PE TP
+button, Backdrive is enabled, allowing the arm to move. 
+
+Freedrive on
+robot
+
+To use Freedrive on robot to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, press and hold the Freedrive
+on robot.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on the Freedrive on robot, Backdrive is enabled,
+allowing the arm to move. 
+
+UR5e 187 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Backdrive Inspection
+
+Description If the robot is close to colliding with something, you can use Backdrive to move the robot
+arm to a safe position before initializing.
+
+3PE Teach Pendant
+
+User Manual 188 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Enable
+Backdrive
+
+1. Press ON to enable power. Status changes to Robot Active
+
+2. Press and hold Freedrive. Status changes to Backdrive
+
+3. Move robot as in Freedrive mode. Joint brakes are released where needed once
+the Freedrive button is activated.
+
+NOTICE
+
+In Backdrive Mode the robot is “heavy” to move around.
+
+MANDATORY ACTION
+
+You must test Backdrive mode on all joints.
+
+Safety
+settings
+
+Verify the robot safety settings comply with the robot installation risk assessment.
+
+Additional
+safety inputs
+and outputs
+are still
+functioning
+
+Check which safety inputs and outputs are active and that they can be triggered via
+PolyScope or external devices.
+
+UR5e 189 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User Manual 190 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-Fw98fbrtomcR56SJuRFM8n' filename='010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf' score='0.5108'><content>10.2. Safety-related Functions and Interfaces
+
+Description Universal Robots robots are equipped with a range of built-in safety functions as well as
+safety I/O, digital and analog control signals to or from the electrical interface, to connect
+to other machines and additional protective devices. Each safety function and I/O is
+constructed according to EN ISO13849-1 (see Certifications) with Performance Level d
+(PLd) using a category 3 architecture.
+See Software Safety Configuration for configuration of the safety functions, inputs and
+outputs in the user interface. See Safety I/O for descriptions on how to connect safety
+devices to I/O.
+
+WARNING
+
+The use of safety configuration parameters different from those
+determined as necessary for risk reduction, can result in hazards that
+are not reasonably eliminated, or risks that are not sufficiently reduced.
+
+• Ensure tools and grippers are connected correctly to avoid
+hazards due to interruption of power.
+
+WARNING: ELECTRICITY
+
+Programmer and/or wiring errors can cause the voltage to change from
+12V to 24V leading to fire damage to equipment.
+
+• Verify the use of 12V and proceed with caution.
+
+Additional
+Information NOTICE
+
+• The use and configuration of safety functions and interfaces must
+follow the risk assessment procedures for each robot application.
+(see chapter Safety section Safety-related Functions and
+Interfaces)
+
+• The stopping time should be taken into account as part of the
+application risk assessment
+
+• If the robot detects a fault or violation in the safety system (e.g. if
+one of the wires in the Emergency Stop circuit is cut or a safety
+limit is exceeded), then a Stop Category 0 is initiated.
+
+NOTICE
+
+The end effector is not protected by the UR safety system. The
+functioning of the end effector and/or connection cable is not monitored
+
+User Manual 100 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.1. Configurable Safety Functions
+
+Description Universal Robots robot safety functions, as listed in the table below, are in the robot but
+are meant to control the robot system i.e. the robot with its attached tool/end effector.
+The robot safety functions are used to reduce robot system risks determined by the risk
+assessment. Positions and speeds are relative to the base of the robot.
+
+Safety
+Function
+
+Description
+
+Joint Position
+Limit
+
+Sets upper and lower limits for the allowed joint positions.
+
+Joint Speed
+Limit
+
+Sets an upper limit for joint speed.
+
+Safety
+Planes
+
+Defines planes, in space, that limit robot position. Safety planes limit
+either the tool/end effector alone or both the tool/end effector and the
+elbow.
+
+Tool
+Orientation
+
+Defines allowable orientation limits for the tool.
+
+Speed Limit
+Limits maximum robot speed. The speed is limited at the elbow, at the
+tool/end effector flange, and at the center of the user-defined tool/end
+effector positions.
+
+Force Limit
+Limits maximum force exerted by the robot tool/end effector and elbow
+in clamping situations. The force is limited at the tool/end effector,
+elbow flange and center of the user-defined tool/end effector positions.
+
+Momentum
+Limit
+
+Limits maximummomentum of the robot.
+
+Power Limit Limits mechanical work performed by the robot.
+Stopping
+Time Limit
+
+Limits maximum time the robot uses for stopping after a robot stop is
+initiated.1
+
+Stopping
+Distance
+Limit
+
+Limits maximum distance travelled by the robot after a robot stop is
+initiated.
+
+Safety
+Function
+
+When performing the application risk assessment, it is necessary to take into account the
+motion of the robot after a stop has been initiated. In order to ease this process, the safety
+functions Stopping Time Limit and Stopping Distance Limit can be used.
+These safety functions dynamically reduces the speed of the robot motion such that it can
+always be stopped within the limits. The joint position limits, the safety planes and the
+tool/end effector orientation limits take the expected stopping distance travel into account
+i.e. the robot motion will slow down before the limit is reached.
+The functional safety can be summarized as:
+
+1Robot stop was previously known as &quot;Protective stop&quot;.
+
+UR5e 101 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety Function Accuracy Performance Level Category
+
+Emergency Stop – d 3
+Safeguard Stop – d 3
+Joint Position Limit 5 ° d 3
+Joint Speed Limit 1.15 °/s d 3
+Safety Planes 40 mm d 3
+Tool Orientation 3 ° d 3
+Speed Limit 50 mm/s d 3
+Force Limit 25 N d 3
+Momentum Limit 3 kg m/s d 3
+Power Limit 10 W d 3
+Stopping Time Limit 50 ms d 3
+Stopping Distance Limit 40 mm d 3
+Safe Home 1.7 ° d 3
+
+Warnings
+CAUTION
+
+Failure to configure the maximum speed limit can result in hazardous
+situations.
+
+• If the robot is used in manual hand-guiding applications with linear
+movements, the speed limit must be set to maximum 250 mm/s for
+the tool/end effector and elbow unless a risk assessment shows
+that higher speeds are acceptable. This will prevent fast
+movements of the robot elbow near singularities.
+
+NOTICE
+
+There are two exceptions to the force limiting function that are important
+when designing an application.
+As the robot stretches out, the knee-joint effect can give high forces in the
+radial direction (away from the base) at low speeds. Similarly, the short
+leverage arm, when the tool/end effector is close to the base and moving
+around the base, can cause high forces at low speeds.
+
+User Manual 102 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Workspace
+
+Front Tilted
+
+Due to the physical properties of the robot arm, certain workspace areas require attention
+regarding pinching hazards. One area (left) is defined for radial motions when the wrist 1
+joint is at least 450 mm from the base of the robot. The other area (right) is within 200 mm
+
+of the base of the robot, when moving tangentially.
+
+Placing the robot in certain areas can create pinching hazards that can lead to injury.
+
+UR5e 103 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+inputs
+
+The robot also has the following safety inputs:
+
+Safety Input Description
+
+Emergency
+Stop Button
+
+Performs a Stop Category 1 (IEC 60204-1) informing other machines using
+the System Emergency Stop output, if that output is defined. A stop is
+initiated in anything connected to the output.
+
+Robot
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) via Control Box input, informing
+other machines using the System Emergency Stop output, if that output is
+defined.
+
+System
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) on robot only, in all modes and
+takes precedence over all other commands.
+
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in all modes, except when using
+a 3-Position Enabling Device and a mode selector - then when in Manual
+Mode, the Safeguard Stop can be set to only function in Automatic Mode.
+
+Automatic
+Mode
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in Automatic mode ONLY.
+Automatic Mode Safeguard Stop can only be selected when a Three-
+Position Enabling Device is configured and installed.
+
+Safeguard
+Reset
+
+Returns from the Safeguard Stop state, when a rising edge on the
+Safeguard Reset input occurs.
+
+Reduced
+Mode
+
+Transitions the safety system to use the Reduced mode limits.
+
+Three-
+Position
+Enabling
+Device
+
+Initiates a Stop Category 2 (IEC 60204-1) when the enabling device is fully
+pressed or fully released in manual mode only. Three-Position Enabling
+Device Stop is triggered when an input goes low. It is unaffected by a
+Safeguard Reset.
+
+Freedrive on
+robot
+
+Enables freedrive, when the robot is not in Automatic Mode.
+
+Operational
+Mode
+
+Switches between Operational modes. The robot is in Automatic mode
+when input is low, Manual mode when input is high.
+
+Automatic
+Mode
+Safeguard
+Reset
+
+Returns from the Automatic Mode Safeguard Stop state, when a rising
+edge on the Automatic Mode Safeguard Reset input occurs.
+
+User Manual 104 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+outputs
+
+For interfacing with other machines, the robot is equipped with the following safety outputs:
+
+Safety
+Output
+
+Description
+
+System
+Emergency
+Stop
+
+While this signal is logic low, the Robot Emergency Stop input is logic low
+or the Emergency Stop button is pressed.
+
+Robot
+Moving
+
+While this signal is logic high, no single joint of the robot moves more than
+0.1 rad/s.
+
+Robot Not
+Stopping
+
+Logic high when the robot is stopped or in the process of stopping due to
+an Emergency Stop or Safeguard Stop. Otherwise it will be logic low.
+
+Reduced Logic low when the safety system is in Reduced Mode.
+Not Reduced Logic low when the system is not in Reduced Mode.
+Safe Home Logic high when robot is in the configured Safe Home Position.
+
+All safety I/O are dual channel, meaning they are safe when low (e.g., the Emergency Stop is
+active when the signals are low).
+
+10.2.2. Safety Functions
+
+Description The safety system acts by monitoring if any of the safety limits are exceeded or if an
+Emergency Stop or a Safeguard Stop is initiated.
+The reactions of the safety system are:
+
+Trigger Reaction
+
+Emergency Stop Stop Category 1
+Safeguard Stop Stop Category 2
+3PE Stop (if a 3-Position Enabling device is connected) Stop Category 2
+Limit Violation Stop Category 0
+Fault Detection Stop Category 0
+
+NOTICE
+
+If the safety system detects any fault or violation, all safety outputs re-
+set to low.
+
+UR5e 105 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.3. Safety Parameter Set
+
+Description The safety system has the following set of configurable safety parameters:
+
+• Normal
+
+• Reduced
+
+Normal and
+Reduced
+
+You can set up the safety limits for each set of safety parameters, creating distinct
+configurations for normal, or higher settings, and reduced. The reduced configuration is
+active when the tool/end effector is positioned on the reduced side of a Trigger Reduced
+Plane, or when the reduced configuration is externally triggered by a safety input.
+Using a plane to trigger the Reduced configuration: When the robot arm moves from the
+side of the trigger plane configured with reduced safety parameters, to the side that is
+configured with normal safety parameters, there is a 20 mm area around the trigger plane
+where both normal and reduced limits are allowed. This area around the trigger plane
+prevents nuisance safety stops when the robot is exactly at the limit.
+Using an input to trigger the Reduced configuration: When a safety input starts, or stops,
+the reduced configuration, up to 500 ms can elapse before the new limit values become
+active. This can happen in either of the following circumstances:
+
+• Switching from the reduced configuration to normal
+
+• Switching from the normal configuration to reduced
+
+The robot arm adapts to the new safety limits within the 500 ms.
+
+User Manual 106 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Recovery When a safety limit is exceeded, the safety system must be restarted. For example, if a joint
+position limit is outside a safety limit, at start-up, Recovery is activated.
+You cannot run programs for the robot when recovery is activated, but the robot arm can be
+manually moved back within limits using Freedrive, or by using the Move tab in PolyScope.
+The safety limits for Recovery are:
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery mode.
+
+UR5e 107 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-EJroE1YhVEfeKiuXQvtUA3' filename='010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf' score='0.5018'><content>10.4. Software Safety Restrictions
+
+Description
+NOTICE
+
+Configuring planes is entirely based on features. We recommend you
+create and name all features before editing the safety configuration, as
+the robot is powered off once the Safety Tab has been unlocked and
+moving the robot will be impossible.
+
+Safety planes restrict robot workspace. You can define up to eight safety planes,
+restricting the robot tool and elbow. You can also restrict elbow movement for each
+safety plane and disable by deselecting the checkbox. Before configuring safety planes,
+you must define a feature in the robot installation. The feature can then be copied into the
+safety plane screen and configured.
+
+WARNING
+
+Defining safety planes only limits the defined Tool spheres and elbow,
+not the overall limit for the robot arm. This means that specifying a
+safety plane, does not guarantee that other parts of the robot arm will
+obey this restriction.
+
+Saf
+ety
+Pla
+nes
+Mod
+es
+
+You can configure each plane with restrictive Modes using the icons listed below.
+
+Disabled The safety plane is never active in this state.
+
+Normal
+When the safety system is in Normal mode, a normal plane is
+active and it acts as a strict limit on the position.
+
+Reduced
+When the safety system is in Reduced mode, a reduced mode
+plane is active and it acts as a strict limit on the position.
+
+Normal &amp; Reduced
+When the safety system is either in Normal or Reduced mode,
+a normal and reduced mode plane is active and acts as a strict
+limit on the position.
+
+Trigger Reduced
+Mode
+
+The safety plane causes the safety system to switch to
+Reduced mode if the robot Tool or Elbow is positioned beyond
+it.
+
+Show
+Pressing this icon hides or shows the safety plane in the
+graphics pane.
+
+Delete
+Deletes the created safety plane. There is no undo/redo
+action. If a plane is deleted in error, it must be remade.
+
+Rename Pressing this icon allows you to rename the plane.
+
+User Manual 122 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Configuring
+safety planes
+
+1. In your PolyScope header, tap Installation.
+
+2. In the Side Menu on the left of the screen, tap Safety and select Planes.
+
+3. On the top right of the screen, in the Planes field, tap Add plane.
+
+4. On the bottom right of the screen, in the Properties field, set up Name, Copy
+Feature and Restrictions.
+
+Copy
+Feature
+
+In Copy Feature, only Undefined and Base are available. You can reset a configured safety
+plane by selecting Undefined
+If the copied feature is modified in the Features screen, a warning icon appears to the right of
+the Copy Feature text. This indicates that the feature is out of sync i.e. the information in the
+properties card is not updated to reflect the modifications that may have been made to the
+Feature.
+
+UR5e 123 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Col
+or
+Cod
+es
+
+Gray Plane is configured but disabled (A)
+Yellow &amp; Black Normal Plane (B)
+Blue &amp; Green Trigger Plane (C)
+
+Black Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Normal Planes)
+
+Green Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Trigger Planes)
+
+Gray Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Disabled Planes)
+
+User Manual 124 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Elbow
+Restriction
+
+You can enable Restrict Elbow to prevent robot elbow joint from passing through any of
+your defined planes. Disable Restrict Elbow for elbow to pass through planes.
+The diameter of the ball that restricts the elbow is different for each size of robot.
+
+UR3e 0.1 m
+UR5e 0.13 m
+UR10e / UR16e 0.15 m
+UR20 / UR30 0.19 m
+
+The information about the specific radius can be found in the urcontrol.conf file on the robot
+under the section [Elbow].
+
+Tool Flange
+Restriction
+
+Restricting the tool flange prevents the tool flange and the attached tool from crossing a
+safety plane. When you restrict the tool flange, the unrestricted area is the area inside of
+the safety plane, where the tool flange can operate normally.
+The tool flange cannot cross the restricted area, outside of the safety plane.
+
+Removing the restriction allows the tool flange to go beyond the safety plane, to the
+restricted area, while the attached tool remains inside of the safety plane.
+
+You can remove the tool flange restriction when working with a large tool off-set. This will
+allow extra distance for the tool to move.
+
+Restricting the tool flange requires the creation of a plane feature. The plane feature is
+used to set up a safety plane later in the safety settings.
+
+UR5e 125 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Adding a
+plane feature
+example
+
+Displacement offsets the plane in either the positive or negative direction along the plane
+normal (Z-axis of the plane feature).
+Deselect the checkbox for the Elbow and the Tool Flange so they do not trigger the safety
+plane. The Elbow can remain checked as needed by your application.
+
+The unrestricted tool flange can cross a safety plane, even when no tool is defined.
+If no tool is added, a warning on the Tool Position button prompts you to correctly define the
+tool.
+When working with an unrestricted tool flange and a defined tool, it is ensured that the
+dangerous part of the tool can&#x27;t go above and/or beyond certain area. The unrestricted tool
+flange can be used for any application where safety planes are needed, like Welding or
+Assembly.
+
+User Manual 126 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool flange
+restriction
+example
+
+In this example, an X-Y-plane is created with an offset of 300mm along the positive Z-axis
+with reference to the base feature.
+The Z-axis of the plane can be thought of as “pointing” towards the restricted area.
+If the safety plane is needed on e.g., the surface of a table, rotate the plane 3.142 rad or
+180° around either the X- or Y-axis so the restricted area is under the table.
+(TIP: Change the display of rotation from “Rotation Vector [rad]” to “RPY [°]”)
+
+If needed it is possible to offset the plane in either positive or negative Z-direction later in
+the safety settings.
+When satisfied with the position of the plane, tap OK.
+
+UR5e 127 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.1. Tool Direction Restriction
+
+Description The Tool Direction screen can be used to restrict the angle in which the tool is pointing.
+The limit is defined by a cone that has a fixed orientation with respect to the robot arm
+Base. As the robot arm moves around, tool direction is restricted so it remains within the
+defined cone. The default direction of the tool coincides with the Z-axis of the tool output
+flange. It can be customized by specifying tilt and pan angles.
+Before configuring the limit, you must define a point or plane in the robot installation. The
+feature can then be copied and its Z axis used as the center of the cone defining the limit.
+
+NOTICE
+
+Configuration of the tool direction is based on features. We recommend
+you create desired feature(s) before editing the safety configuration, as
+once the Safety Tab has been unlocked, the robot arm powers off
+making it impossible to define new features.
+
+User Manual 128 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Limit
+Prope
+rties
+
+The Tool Direction limit has three configurable properties:
+
+1. Cone center: You can select a point or plane feature from the drop-down menu, to define
+the center of the cone. The Z axis of the selected feature is used as the direction around
+which the cone is centred.
+
+2. Cone angle: You can define how many degrees the robot is allowed to deviate from center.
+
+Disabled Tool direction limit Never active
+Normal Tool direction limit Active only when safety system is in Normal mode
+Reduced Tool direction limit Active only when the safety system is in Reduced mode
+Normal &amp; Reduced Tool
+direction limit
+
+Active when the safety system is in Normal mode as
+well as when it is in Reduced mode.
+
+You can reset the values to default or undo the Tool Direction configuration by setting the copy
+feature back to &quot;Undefined&quot;.
+
+Tool
+Prope
+rties
+
+By default, the tool points in the same direction as the Z axis of the tool output flange. This can be
+modified by specifying two angles:
+
+• Tilt angle: How much to tilt the Z axis of the output flange towards the X axis of the output
+flange
+
+• Pan angle: How much to rotate the tilted Z axis around the original output flange Z axis.
+
+Alternatively, the Z axis of an existing TCP can be copied by selecting that TCP from the drop-down
+menu.
+
+UR5e 129 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.2. Tool Position Restriction
+
+Description The Tool Position screen enables more controlled restriction of tools and/or accessories
+placed on the end of the robot arm.
+
+• Robot is where you can visualize your modifications.
+
+• Tool is where you can define and configure a tool up to two tools.
+
+• Tool_1 is the default tool defined with values x=0.0, y= 0.0, z=0.0 and radius=0.0.
+These values represent the robot tool flange.
+
+Under Copy TCP, you can also select Tool Flange and cause the tool values to go back
+to 0.
+A default sphere is defined at the tool flange.
+
+User Manual 130 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User
+defined
+tools
+
+For the user defined tools, the user can change:
+
+• Radius to change the radius of the tool sphere. The radius is considered when using
+safety planes. When a point in the sphere passes a reduced mode trigger plane, the
+robot switches to Reduced mode. The safety system prevents any point on the sphere
+from passing a safety plane (see Software Safety Restrictions).
+
+• Position to change the position of the tool with respect to the tool flange of the robot.
+The position is considered for the safety functions for tool speed, tool force, stopping
+distance and safety planes.
+
+You can use an existing Tool Center Point as a base for defining new tool positions. A copy of
+the existing TCP, predefined in General menu, in TCP screen, can be accessed in Tool
+Position menu, in Copy TCP drop-down list.
+When you edit or adjust the values in the Edit Position input fields, the name of the TCP
+visible in the drop down menu changes to custom, indicating that there is a difference
+between the copied TCP and the actual limit input. The original TCP is still available in the
+drop down list and can be selected again to change the values back to the original position.
+The selection in the copy TCP drop down menu does not affect the tool name.
+Once you apply your Tool Position screen changes, if you try to modify the copied TCP in the
+TCP configuration screen, a warning icon appears to the right of the Copy TCP text. This
+indicates that the TCP is out of sync i.e. the information in the properties field is not updated
+to reflect modifications that may have been made to the TCP. The TCP can be synced by
+pressing the sync icon (see ).
+The TCP does not have to be synced in order to define and use a tool successfully.
+You can rename the tool by pressing the pencil tab next to the displayed tool name. You can
+also determine the Radius with an allowed range of 0-300 mm. The limit appears in the
+graphics pane as either a point or a sphere depending on radius size.
+
+UR5e 131 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+
+You must set a Tool Position within the safety settings, for the safety plane to trigger
+correctly when the tool TCP approaches the safety plane.
+The warning remains on the Tool Position if:
+
+• You fail to add a new tool under Tool Flange.
+
+To configure the tool position
+
+1. In the Header tap Installation.
+
+2. On the left side of the screen, under Safety, tap Tool Position.
+
+3. On the right side of the screen, select Add Tool.
+
+• The newly added tool has a default name: Tool_x.
+
+4. Tap the edit button to rename Tool_x to something more identifiable.
+
+5. Edit the Radius and Position to match that of the tool you are currently using, or use
+the Copy TCP drop-down and choose a TCP from the General&gt;TCP settings if such
+is defined.
+
+User Manual 132 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+example
+
+In this example, a Radius of 0.8mm is set and the TCP position to XYZ [20, 0, 400] in
+millimeters respectively. Optionally you can choose to ”Copy TCP” by using the drop-down
+menu if one has already been set in the -&gt;General/TCP settings. Once the Apply is tapped
+in the bottom right corner of the screen, you are DONE.
+
+The warning on the Tool Position button indicates a tool is not added under Tool Flange.
+
+Tool Position button without the warning indicates a tool (other than the Tool Flange) is
+added.
+
+UR5e 133 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result></sources>",resp_0d73cdcfd39442dd00690d4dc377b88190b084dba99b45c0de,gpt-5-mini-2025-08-07,completed,1762479555.0,10525,322,10847,
+eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX3NlbWFudGljIiwiZWZmb3J0IjoibG93IiwiZmV3X3Nob3RfaWQiOiJBIiwibWF4X3Rva2VucyI6NTAwMCwibW9kZWwiOiJncHQtNS1taW5pLTIwMjUtMDgtMDciLCJxdWVzdGlvbiI6IkhvdyBtYW55IHNhZmV0eSBtb2RlcyBkb2VzIHRoZSBhcm0gaGF2ZSwgYW5kIHdoYXQgYXJlIHRoZSBuYW1lcyBvZiBlYWNoPyIsInJlYXNvbmluZ19lZmZvcnQiOiJsb3ciLCJ0b3BfayI6M30sInJ1bl91dWlkIjoiMmYxMzliOTAtN2JiOS00NDg3LTkwZDctODM0ZTE4ZDM4ZmQ4In0fKFxSNZi9fw,2025-11-06 20:39:22 EST,2025-11-06 20:39:33 EST,10.51 Seconds,3000,openai_semantic,gpt-5-mini-2025-08-07,5000,low,3,A,A,1,"How many safety modes does the arm have, and what are the names of each?","The robot arm has three safety modes. Normal mode, reduced mode, and recovery mode. ","There are two safety modes: Normal and Reduced. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]
+
+Supporting points:
+- The robot safety parameters can be configured separately for Normal and Reduced, and the Reduced configuration becomes active when triggered by a plane or safety input. [010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf]
+- Safety planes and other safety limits can be set to be active in Normal, Reduced, or both modes. [010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf]",013__L1__13._Emergency_Events__pp181-189.pdf;010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf;010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf,"<sources><result file_id='file-8i37d9zxCTmvxgnMidtQrQ' filename='013__L1__13._Emergency_Events__pp181-189.pdf' score='0.5770'><content>13. Emergency Events
+Description Follow the instructions here to handle emergency situations, such as activating the
+
+emergency stop using the red push-button. This section also describes how to manually
+move the system without power.
+
+13.1. Emergency Stop
+
+Description The Emergency Stop or E-stop is the red push-button located on the Teach Pendant.
+Press the emergency stop push-button to stop all robot motion. Activating the
+emergency stop push-button causes a stop category one (IEC 60204-1).
+Emergency stops are not safeguards (ISO 12100).
+
+Emergency stops are complementary protective measures that do not prevent injury.
+The risk assessment of the robot application determines if additional emergency stop
+push-buttons are required. The emergency stop function and the actuating device must
+comply with ISO 13850.
+After an emergency stop is actuated, the push-button latches in that setting. As such,
+each time an emergency stop is activated, it must be manually reset at the push-button
+that initiated the stop.
+Before resetting the emergency stop push-button, you must visually identify and assess
+the reason the E-stop was first activated. Visual assessment of all the equipment in the
+application is required. Once the problem is solved, reset the emergency stop push-
+button.
+
+To reset the emergency stop push-button
+
+1. Hold the push-button and twist clockwise until the latching disengages.
+
+You should feel when the latching is disengaged, indicating the push-button is
+reset.
+
+2. Verify the situation and whether to reset the emergency stop.
+
+3. After resetting the emergency stop, restore power to the robot and resume
+operation.
+
+User Manual 182 UR5e
+
+13. Emergency Events
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.2. MovementWithout Drive Power
+
+Description In the unlikely event of an emergency, when powering the robot is either impossible or
+unwanted, you can use forced back-driving to move the robot arm.
+
+To perform forced back-driving you must push, or pull, the robot arm hard to move the
+joint. Each joint brake has a friction clutch that enables movement during high forced
+torque.
+
+Performing forced back-driving requires high force and cannot be performed by one
+person alone. In clamping situations, two or more people are required to do the forced
+back-driving. In some situations, two or more people are required to disassemble the
+robot arm.
+
+See the Service Manual for information about how to disassemble the robot.
+
+WARNING
+
+Risks due to an unsupported robot arm breaking or falling can cause
+injury or death.
+
+• Support the robot arm before removing power.
+
+NOTICE
+
+Moving the robot arm manually is intended for emergency and service
+purposes only. Unnecessary moving of the robot arm can lead to
+property damage.
+
+• Do not move the joint more than 160 degrees, to ensure the
+robot can find its original physical position.
+
+• Do not move any joint more than necessary.
+
+UR5e 183 User Manual
+
+13. Emergency Events
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3. Modes
+
+Description You access and activate different modes using Teach Pendant or the Dashboard
+Server. If an external mode selector is integrated, it control the modes - not PolyScope or
+the Dashboard Server.
+
+Automatic Mode Once activated, the robot can only execute a program of pre-defined
+tasks. You cannot modify or save programs and installations.
+Manual Mode Once activated, you can program the robot. You can modify and save
+programs and installations.
+
+High Speed Manual Mode can be used. It allows both tool speed and elbow speed to
+temporarily exceed 250 mm/s, while a hold-to-run is used.
+Hold-to-run is performed by continuous contact with the Speed Slider.
+
+The robot performs a Safeguard Stop in Manual mode, if a Three-Position Enabling
+Device is configured, and either released (not pressed) or it is fully compressed.
+
+Switching between Automatic mode to Manual mode requires the Three-Position
+Enabling Device to be fully released and pressed again to allow the robot to move.
+When using High Speed Manual Mode, use safety joint limits (see Joint Limits) or safety
+planes (see Safety Planes) to restrict the robot’s moving space.
+
+Mode
+switching
+
+Operational mode Manual Automatic
+
+Freedrive x *
+Move robot with arrows on Move Tab x *
+Edit &amp; save program &amp; installation x
+
+Execute Programs
+Reduced
+speed**
+
+*
+
+Start program from selected node x
+*Only when no Three-Position Enabling Device is configured.
+** If a Three-Position Enabling Device is configured, the robot operates at Manual
+Reduced Speed unless High Speed Manual Mode is activated.
+
+User Manual 184 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Notice when
+switching
+mode
+
+NOTICE
+• Some UR robot sizes might not be equipped with a Three-Position
+Enabling Device. If the risk assessment requires the enabling
+device, a 3PE Teach Pendant must be used.
+
+WARNING
+• Any suspended safeguards must be returned to full functionality
+before selecting Automatic Mode.
+
+• Wherever possible, Manual Mode shall only be used with all
+persons located outside the safeguarded space.
+
+• If an external mode selector is used, it must be placed outside the
+safeguarded space.
+
+• No-one is to enter, or be within, the safeguarded space in Automatic
+Mode, unless safeguarding is used or the collaborative application
+is validated for power and force limiting (PFL).
+
+To Switch
+Modes: PolyScope
+
+1. In the Header, select the profile icon.
+
+• Automatic indicates the operational mode of the robot is set to
+Automatic.
+
+• Manual indicates the operational mode of the robot is set to Manual.
+
+Using the
+Dashboard
+Server
+
+1. Connect to the Dashboard server.
+
+2. Use the Set Operational Mode commands.
+
+• Set Operational Mode Automatic
+
+• Set Operational Mode Manual
+
+• Clear Operational Mode
+
+Three-Position
+Enabling
+Device
+
+When a Three-Position Enabling Device is used and the robot is in Manual Mode,
+movement requires pressing the Three-Position Enabling Device to the center-on
+position. The Three-Position Enabling Device has no effect in Automatic Mode.
+
+A 3PE Teach Pendant is recommended for programming. If another person can be within
+the safeguarded space when in Manual Mode, an additional device can be integrated and
+configured for the additional person&#x27;s use.
+
+UR5e 185 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+13.3.1. RecoveryMode
+
+Description When a safety limit is exceeded, Recovery Mode is automatically activated, allowing the
+robot arm to be moved. Recovery Mode is a type of Manual Mode .
+You cannot run robot programs when Recovery Mode is active.
+
+During Recovery Mode, the robot arm is moved to be within joint limits, using either
+Freedrive or the Move tab in PolyScope.
+
+Safety limits
+of Recovery
+Mode
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery.
+
+13.3.2. Backdrive
+
+Description Backdrive is a Manual Mode used to force specific joints to a desired position without
+releasing all brakes in the robot arm.
+This is sometimes necessary if the robot arm is close to collision and the vibrations that
+accompany a full restart are not desired.
+The robot joints feel heavy to move, while Backdrive is in use.
+
+You can use any of the following sequences to enable Backdrive:
+
+• 3PE Teach Pendant
+
+• 3PE device/switch
+
+• Freedrive on robot
+
+User Manual 186 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+3PE Teach
+Pendant
+
+To use the 3PE TP button to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as light-press is maintained on the 3PE button, Backdrive is enabled,
+allowing the arm to move. 
+
+3PE
+device/switch
+
+To use a 3PE device/switch to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, light-press, then light-press-
+and-hold, the 3PE TP button.
+The robot state changes to System 3PE Stop.
+
+3. Press and hold the 3PE device/switch.
+The robot state changes to Backdrive.
+
+4. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on both the 3PE device/switch and the 3PE TP
+button, Backdrive is enabled, allowing the arm to move. 
+
+Freedrive on
+robot
+
+To use Freedrive on robot to backdrive the robot arm.
+
+1. On the Initialize screen, tap ON to start the power up sequence.
+
+2. When the robot state is Teach Pendant 3PE Stop, press and hold the Freedrive
+on robot.
+The robot state changes to Backdrive.
+
+3. Now you can apply significant pressure to release the brake in a desired joint to
+move the robot arm.
+As long as the hold is maintained on the Freedrive on robot, Backdrive is enabled,
+allowing the arm to move. 
+
+UR5e 187 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Backdrive Inspection
+
+Description If the robot is close to colliding with something, you can use Backdrive to move the robot
+arm to a safe position before initializing.
+
+3PE Teach Pendant
+
+User Manual 188 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Enable
+Backdrive
+
+1. Press ON to enable power. Status changes to Robot Active
+
+2. Press and hold Freedrive. Status changes to Backdrive
+
+3. Move robot as in Freedrive mode. Joint brakes are released where needed once
+the Freedrive button is activated.
+
+NOTICE
+
+In Backdrive Mode the robot is “heavy” to move around.
+
+MANDATORY ACTION
+
+You must test Backdrive mode on all joints.
+
+Safety
+settings
+
+Verify the robot safety settings comply with the robot installation risk assessment.
+
+Additional
+safety inputs
+and outputs
+are still
+functioning
+
+Check which safety inputs and outputs are active and that they can be triggered via
+PolyScope or external devices.
+
+UR5e 189 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User Manual 190 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-EJroE1YhVEfeKiuXQvtUA3' filename='010__L1__10._First_Time_Use__pp98-164__L2__04__10.4._Software_Safety_Restrictions__pp121-132.pdf' score='0.5121'><content>10.4. Software Safety Restrictions
+
+Description
+NOTICE
+
+Configuring planes is entirely based on features. We recommend you
+create and name all features before editing the safety configuration, as
+the robot is powered off once the Safety Tab has been unlocked and
+moving the robot will be impossible.
+
+Safety planes restrict robot workspace. You can define up to eight safety planes,
+restricting the robot tool and elbow. You can also restrict elbow movement for each
+safety plane and disable by deselecting the checkbox. Before configuring safety planes,
+you must define a feature in the robot installation. The feature can then be copied into the
+safety plane screen and configured.
+
+WARNING
+
+Defining safety planes only limits the defined Tool spheres and elbow,
+not the overall limit for the robot arm. This means that specifying a
+safety plane, does not guarantee that other parts of the robot arm will
+obey this restriction.
+
+Saf
+ety
+Pla
+nes
+Mod
+es
+
+You can configure each plane with restrictive Modes using the icons listed below.
+
+Disabled The safety plane is never active in this state.
+
+Normal
+When the safety system is in Normal mode, a normal plane is
+active and it acts as a strict limit on the position.
+
+Reduced
+When the safety system is in Reduced mode, a reduced mode
+plane is active and it acts as a strict limit on the position.
+
+Normal &amp; Reduced
+When the safety system is either in Normal or Reduced mode,
+a normal and reduced mode plane is active and acts as a strict
+limit on the position.
+
+Trigger Reduced
+Mode
+
+The safety plane causes the safety system to switch to
+Reduced mode if the robot Tool or Elbow is positioned beyond
+it.
+
+Show
+Pressing this icon hides or shows the safety plane in the
+graphics pane.
+
+Delete
+Deletes the created safety plane. There is no undo/redo
+action. If a plane is deleted in error, it must be remade.
+
+Rename Pressing this icon allows you to rename the plane.
+
+User Manual 122 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Configuring
+safety planes
+
+1. In your PolyScope header, tap Installation.
+
+2. In the Side Menu on the left of the screen, tap Safety and select Planes.
+
+3. On the top right of the screen, in the Planes field, tap Add plane.
+
+4. On the bottom right of the screen, in the Properties field, set up Name, Copy
+Feature and Restrictions.
+
+Copy
+Feature
+
+In Copy Feature, only Undefined and Base are available. You can reset a configured safety
+plane by selecting Undefined
+If the copied feature is modified in the Features screen, a warning icon appears to the right of
+the Copy Feature text. This indicates that the feature is out of sync i.e. the information in the
+properties card is not updated to reflect the modifications that may have been made to the
+Feature.
+
+UR5e 123 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Col
+or
+Cod
+es
+
+Gray Plane is configured but disabled (A)
+Yellow &amp; Black Normal Plane (B)
+Blue &amp; Green Trigger Plane (C)
+
+Black Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Normal Planes)
+
+Green Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Trigger Planes)
+
+Gray Arrow
+The side of the plane the tool and/or elbow is allowed to be on (For
+Disabled Planes)
+
+User Manual 124 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Elbow
+Restriction
+
+You can enable Restrict Elbow to prevent robot elbow joint from passing through any of
+your defined planes. Disable Restrict Elbow for elbow to pass through planes.
+The diameter of the ball that restricts the elbow is different for each size of robot.
+
+UR3e 0.1 m
+UR5e 0.13 m
+UR10e / UR16e 0.15 m
+UR20 / UR30 0.19 m
+
+The information about the specific radius can be found in the urcontrol.conf file on the robot
+under the section [Elbow].
+
+Tool Flange
+Restriction
+
+Restricting the tool flange prevents the tool flange and the attached tool from crossing a
+safety plane. When you restrict the tool flange, the unrestricted area is the area inside of
+the safety plane, where the tool flange can operate normally.
+The tool flange cannot cross the restricted area, outside of the safety plane.
+
+Removing the restriction allows the tool flange to go beyond the safety plane, to the
+restricted area, while the attached tool remains inside of the safety plane.
+
+You can remove the tool flange restriction when working with a large tool off-set. This will
+allow extra distance for the tool to move.
+
+Restricting the tool flange requires the creation of a plane feature. The plane feature is
+used to set up a safety plane later in the safety settings.
+
+UR5e 125 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Adding a
+plane feature
+example
+
+Displacement offsets the plane in either the positive or negative direction along the plane
+normal (Z-axis of the plane feature).
+Deselect the checkbox for the Elbow and the Tool Flange so they do not trigger the safety
+plane. The Elbow can remain checked as needed by your application.
+
+The unrestricted tool flange can cross a safety plane, even when no tool is defined.
+If no tool is added, a warning on the Tool Position button prompts you to correctly define the
+tool.
+When working with an unrestricted tool flange and a defined tool, it is ensured that the
+dangerous part of the tool can&#x27;t go above and/or beyond certain area. The unrestricted tool
+flange can be used for any application where safety planes are needed, like Welding or
+Assembly.
+
+User Manual 126 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool flange
+restriction
+example
+
+In this example, an X-Y-plane is created with an offset of 300mm along the positive Z-axis
+with reference to the base feature.
+The Z-axis of the plane can be thought of as “pointing” towards the restricted area.
+If the safety plane is needed on e.g., the surface of a table, rotate the plane 3.142 rad or
+180° around either the X- or Y-axis so the restricted area is under the table.
+(TIP: Change the display of rotation from “Rotation Vector [rad]” to “RPY [°]”)
+
+If needed it is possible to offset the plane in either positive or negative Z-direction later in
+the safety settings.
+When satisfied with the position of the plane, tap OK.
+
+UR5e 127 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.1. Tool Direction Restriction
+
+Description The Tool Direction screen can be used to restrict the angle in which the tool is pointing.
+The limit is defined by a cone that has a fixed orientation with respect to the robot arm
+Base. As the robot arm moves around, tool direction is restricted so it remains within the
+defined cone. The default direction of the tool coincides with the Z-axis of the tool output
+flange. It can be customized by specifying tilt and pan angles.
+Before configuring the limit, you must define a point or plane in the robot installation. The
+feature can then be copied and its Z axis used as the center of the cone defining the limit.
+
+NOTICE
+
+Configuration of the tool direction is based on features. We recommend
+you create desired feature(s) before editing the safety configuration, as
+once the Safety Tab has been unlocked, the robot arm powers off
+making it impossible to define new features.
+
+User Manual 128 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Limit
+Prope
+rties
+
+The Tool Direction limit has three configurable properties:
+
+1. Cone center: You can select a point or plane feature from the drop-down menu, to define
+the center of the cone. The Z axis of the selected feature is used as the direction around
+which the cone is centred.
+
+2. Cone angle: You can define how many degrees the robot is allowed to deviate from center.
+
+Disabled Tool direction limit Never active
+Normal Tool direction limit Active only when safety system is in Normal mode
+Reduced Tool direction limit Active only when the safety system is in Reduced mode
+Normal &amp; Reduced Tool
+direction limit
+
+Active when the safety system is in Normal mode as
+well as when it is in Reduced mode.
+
+You can reset the values to default or undo the Tool Direction configuration by setting the copy
+feature back to &quot;Undefined&quot;.
+
+Tool
+Prope
+rties
+
+By default, the tool points in the same direction as the Z axis of the tool output flange. This can be
+modified by specifying two angles:
+
+• Tilt angle: How much to tilt the Z axis of the output flange towards the X axis of the output
+flange
+
+• Pan angle: How much to rotate the tilted Z axis around the original output flange Z axis.
+
+Alternatively, the Z axis of an existing TCP can be copied by selecting that TCP from the drop-down
+menu.
+
+UR5e 129 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.4.2. Tool Position Restriction
+
+Description The Tool Position screen enables more controlled restriction of tools and/or accessories
+placed on the end of the robot arm.
+
+• Robot is where you can visualize your modifications.
+
+• Tool is where you can define and configure a tool up to two tools.
+
+• Tool_1 is the default tool defined with values x=0.0, y= 0.0, z=0.0 and radius=0.0.
+These values represent the robot tool flange.
+
+Under Copy TCP, you can also select Tool Flange and cause the tool values to go back
+to 0.
+A default sphere is defined at the tool flange.
+
+User Manual 130 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+User
+defined
+tools
+
+For the user defined tools, the user can change:
+
+• Radius to change the radius of the tool sphere. The radius is considered when using
+safety planes. When a point in the sphere passes a reduced mode trigger plane, the
+robot switches to Reduced mode. The safety system prevents any point on the sphere
+from passing a safety plane (see Software Safety Restrictions).
+
+• Position to change the position of the tool with respect to the tool flange of the robot.
+The position is considered for the safety functions for tool speed, tool force, stopping
+distance and safety planes.
+
+You can use an existing Tool Center Point as a base for defining new tool positions. A copy of
+the existing TCP, predefined in General menu, in TCP screen, can be accessed in Tool
+Position menu, in Copy TCP drop-down list.
+When you edit or adjust the values in the Edit Position input fields, the name of the TCP
+visible in the drop down menu changes to custom, indicating that there is a difference
+between the copied TCP and the actual limit input. The original TCP is still available in the
+drop down list and can be selected again to change the values back to the original position.
+The selection in the copy TCP drop down menu does not affect the tool name.
+Once you apply your Tool Position screen changes, if you try to modify the copied TCP in the
+TCP configuration screen, a warning icon appears to the right of the Copy TCP text. This
+indicates that the TCP is out of sync i.e. the information in the properties field is not updated
+to reflect modifications that may have been made to the TCP. The TCP can be synced by
+pressing the sync icon (see ).
+The TCP does not have to be synced in order to define and use a tool successfully.
+You can rename the tool by pressing the pencil tab next to the displayed tool name. You can
+also determine the Radius with an allowed range of 0-300 mm. The limit appears in the
+graphics pane as either a point or a sphere depending on radius size.
+
+UR5e 131 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+
+You must set a Tool Position within the safety settings, for the safety plane to trigger
+correctly when the tool TCP approaches the safety plane.
+The warning remains on the Tool Position if:
+
+• You fail to add a new tool under Tool Flange.
+
+To configure the tool position
+
+1. In the Header tap Installation.
+
+2. On the left side of the screen, under Safety, tap Tool Position.
+
+3. On the right side of the screen, select Add Tool.
+
+• The newly added tool has a default name: Tool_x.
+
+4. Tap the edit button to rename Tool_x to something more identifiable.
+
+5. Edit the Radius and Position to match that of the tool you are currently using, or use
+the Copy TCP drop-down and choose a TCP from the General&gt;TCP settings if such
+is defined.
+
+User Manual 132 UR5e
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Tool Position
+Warning
+example
+
+In this example, a Radius of 0.8mm is set and the TCP position to XYZ [20, 0, 400] in
+millimeters respectively. Optionally you can choose to ”Copy TCP” by using the drop-down
+menu if one has already been set in the -&gt;General/TCP settings. Once the Apply is tapped
+in the bottom right corner of the screen, you are DONE.
+
+The warning on the Tool Position button indicates a tool is not added under Tool Flange.
+
+Tool Position button without the warning indicates a tool (other than the Tool Flange) is
+added.
+
+UR5e 133 User Manual
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result><result file_id='file-Fw98fbrtomcR56SJuRFM8n' filename='010__L1__10._First_Time_Use__pp98-164__L2__02__10.2._Safety-related_Functions_and_Interfaces__pp99-106.pdf' score='0.5107'><content>10.2. Safety-related Functions and Interfaces
+
+Description Universal Robots robots are equipped with a range of built-in safety functions as well as
+safety I/O, digital and analog control signals to or from the electrical interface, to connect
+to other machines and additional protective devices. Each safety function and I/O is
+constructed according to EN ISO13849-1 (see Certifications) with Performance Level d
+(PLd) using a category 3 architecture.
+See Software Safety Configuration for configuration of the safety functions, inputs and
+outputs in the user interface. See Safety I/O for descriptions on how to connect safety
+devices to I/O.
+
+WARNING
+
+The use of safety configuration parameters different from those
+determined as necessary for risk reduction, can result in hazards that
+are not reasonably eliminated, or risks that are not sufficiently reduced.
+
+• Ensure tools and grippers are connected correctly to avoid
+hazards due to interruption of power.
+
+WARNING: ELECTRICITY
+
+Programmer and/or wiring errors can cause the voltage to change from
+12V to 24V leading to fire damage to equipment.
+
+• Verify the use of 12V and proceed with caution.
+
+Additional
+Information NOTICE
+
+• The use and configuration of safety functions and interfaces must
+follow the risk assessment procedures for each robot application.
+(see chapter Safety section Safety-related Functions and
+Interfaces)
+
+• The stopping time should be taken into account as part of the
+application risk assessment
+
+• If the robot detects a fault or violation in the safety system (e.g. if
+one of the wires in the Emergency Stop circuit is cut or a safety
+limit is exceeded), then a Stop Category 0 is initiated.
+
+NOTICE
+
+The end effector is not protected by the UR safety system. The
+functioning of the end effector and/or connection cable is not monitored
+
+User Manual 100 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.1. Configurable Safety Functions
+
+Description Universal Robots robot safety functions, as listed in the table below, are in the robot but
+are meant to control the robot system i.e. the robot with its attached tool/end effector.
+The robot safety functions are used to reduce robot system risks determined by the risk
+assessment. Positions and speeds are relative to the base of the robot.
+
+Safety
+Function
+
+Description
+
+Joint Position
+Limit
+
+Sets upper and lower limits for the allowed joint positions.
+
+Joint Speed
+Limit
+
+Sets an upper limit for joint speed.
+
+Safety
+Planes
+
+Defines planes, in space, that limit robot position. Safety planes limit
+either the tool/end effector alone or both the tool/end effector and the
+elbow.
+
+Tool
+Orientation
+
+Defines allowable orientation limits for the tool.
+
+Speed Limit
+Limits maximum robot speed. The speed is limited at the elbow, at the
+tool/end effector flange, and at the center of the user-defined tool/end
+effector positions.
+
+Force Limit
+Limits maximum force exerted by the robot tool/end effector and elbow
+in clamping situations. The force is limited at the tool/end effector,
+elbow flange and center of the user-defined tool/end effector positions.
+
+Momentum
+Limit
+
+Limits maximummomentum of the robot.
+
+Power Limit Limits mechanical work performed by the robot.
+Stopping
+Time Limit
+
+Limits maximum time the robot uses for stopping after a robot stop is
+initiated.1
+
+Stopping
+Distance
+Limit
+
+Limits maximum distance travelled by the robot after a robot stop is
+initiated.
+
+Safety
+Function
+
+When performing the application risk assessment, it is necessary to take into account the
+motion of the robot after a stop has been initiated. In order to ease this process, the safety
+functions Stopping Time Limit and Stopping Distance Limit can be used.
+These safety functions dynamically reduces the speed of the robot motion such that it can
+always be stopped within the limits. The joint position limits, the safety planes and the
+tool/end effector orientation limits take the expected stopping distance travel into account
+i.e. the robot motion will slow down before the limit is reached.
+The functional safety can be summarized as:
+
+1Robot stop was previously known as &quot;Protective stop&quot;.
+
+UR5e 101 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety Function Accuracy Performance Level Category
+
+Emergency Stop – d 3
+Safeguard Stop – d 3
+Joint Position Limit 5 ° d 3
+Joint Speed Limit 1.15 °/s d 3
+Safety Planes 40 mm d 3
+Tool Orientation 3 ° d 3
+Speed Limit 50 mm/s d 3
+Force Limit 25 N d 3
+Momentum Limit 3 kg m/s d 3
+Power Limit 10 W d 3
+Stopping Time Limit 50 ms d 3
+Stopping Distance Limit 40 mm d 3
+Safe Home 1.7 ° d 3
+
+Warnings
+CAUTION
+
+Failure to configure the maximum speed limit can result in hazardous
+situations.
+
+• If the robot is used in manual hand-guiding applications with linear
+movements, the speed limit must be set to maximum 250 mm/s for
+the tool/end effector and elbow unless a risk assessment shows
+that higher speeds are acceptable. This will prevent fast
+movements of the robot elbow near singularities.
+
+NOTICE
+
+There are two exceptions to the force limiting function that are important
+when designing an application.
+As the robot stretches out, the knee-joint effect can give high forces in the
+radial direction (away from the base) at low speeds. Similarly, the short
+leverage arm, when the tool/end effector is close to the base and moving
+around the base, can cause high forces at low speeds.
+
+User Manual 102 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Workspace
+
+Front Tilted
+
+Due to the physical properties of the robot arm, certain workspace areas require attention
+regarding pinching hazards. One area (left) is defined for radial motions when the wrist 1
+joint is at least 450 mm from the base of the robot. The other area (right) is within 200 mm
+
+of the base of the robot, when moving tangentially.
+
+Placing the robot in certain areas can create pinching hazards that can lead to injury.
+
+UR5e 103 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+inputs
+
+The robot also has the following safety inputs:
+
+Safety Input Description
+
+Emergency
+Stop Button
+
+Performs a Stop Category 1 (IEC 60204-1) informing other machines using
+the System Emergency Stop output, if that output is defined. A stop is
+initiated in anything connected to the output.
+
+Robot
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) via Control Box input, informing
+other machines using the System Emergency Stop output, if that output is
+defined.
+
+System
+Emergency
+Stop
+
+Performs a Stop Category 1 (IEC 60204-1) on robot only, in all modes and
+takes precedence over all other commands.
+
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in all modes, except when using
+a 3-Position Enabling Device and a mode selector - then when in Manual
+Mode, the Safeguard Stop can be set to only function in Automatic Mode.
+
+Automatic
+Mode
+Safeguard
+Stop
+
+Performs a Stop Category 2 (IEC 60204-1) in Automatic mode ONLY.
+Automatic Mode Safeguard Stop can only be selected when a Three-
+Position Enabling Device is configured and installed.
+
+Safeguard
+Reset
+
+Returns from the Safeguard Stop state, when a rising edge on the
+Safeguard Reset input occurs.
+
+Reduced
+Mode
+
+Transitions the safety system to use the Reduced mode limits.
+
+Three-
+Position
+Enabling
+Device
+
+Initiates a Stop Category 2 (IEC 60204-1) when the enabling device is fully
+pressed or fully released in manual mode only. Three-Position Enabling
+Device Stop is triggered when an input goes low. It is unaffected by a
+Safeguard Reset.
+
+Freedrive on
+robot
+
+Enables freedrive, when the robot is not in Automatic Mode.
+
+Operational
+Mode
+
+Switches between Operational modes. The robot is in Automatic mode
+when input is low, Manual mode when input is high.
+
+Automatic
+Mode
+Safeguard
+Reset
+
+Returns from the Automatic Mode Safeguard Stop state, when a rising
+edge on the Automatic Mode Safeguard Reset input occurs.
+
+User Manual 104 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Safety
+outputs
+
+For interfacing with other machines, the robot is equipped with the following safety outputs:
+
+Safety
+Output
+
+Description
+
+System
+Emergency
+Stop
+
+While this signal is logic low, the Robot Emergency Stop input is logic low
+or the Emergency Stop button is pressed.
+
+Robot
+Moving
+
+While this signal is logic high, no single joint of the robot moves more than
+0.1 rad/s.
+
+Robot Not
+Stopping
+
+Logic high when the robot is stopped or in the process of stopping due to
+an Emergency Stop or Safeguard Stop. Otherwise it will be logic low.
+
+Reduced Logic low when the safety system is in Reduced Mode.
+Not Reduced Logic low when the system is not in Reduced Mode.
+Safe Home Logic high when robot is in the configured Safe Home Position.
+
+All safety I/O are dual channel, meaning they are safe when low (e.g., the Emergency Stop is
+active when the signals are low).
+
+10.2.2. Safety Functions
+
+Description The safety system acts by monitoring if any of the safety limits are exceeded or if an
+Emergency Stop or a Safeguard Stop is initiated.
+The reactions of the safety system are:
+
+Trigger Reaction
+
+Emergency Stop Stop Category 1
+Safeguard Stop Stop Category 2
+3PE Stop (if a 3-Position Enabling device is connected) Stop Category 2
+Limit Violation Stop Category 0
+Fault Detection Stop Category 0
+
+NOTICE
+
+If the safety system detects any fault or violation, all safety outputs re-
+set to low.
+
+UR5e 105 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+10.2.3. Safety Parameter Set
+
+Description The safety system has the following set of configurable safety parameters:
+
+• Normal
+
+• Reduced
+
+Normal and
+Reduced
+
+You can set up the safety limits for each set of safety parameters, creating distinct
+configurations for normal, or higher settings, and reduced. The reduced configuration is
+active when the tool/end effector is positioned on the reduced side of a Trigger Reduced
+Plane, or when the reduced configuration is externally triggered by a safety input.
+Using a plane to trigger the Reduced configuration: When the robot arm moves from the
+side of the trigger plane configured with reduced safety parameters, to the side that is
+configured with normal safety parameters, there is a 20 mm area around the trigger plane
+where both normal and reduced limits are allowed. This area around the trigger plane
+prevents nuisance safety stops when the robot is exactly at the limit.
+Using an input to trigger the Reduced configuration: When a safety input starts, or stops,
+the reduced configuration, up to 500 ms can elapse before the new limit values become
+active. This can happen in either of the following circumstances:
+
+• Switching from the reduced configuration to normal
+
+• Switching from the normal configuration to reduced
+
+The robot arm adapts to the new safety limits within the 500 ms.
+
+User Manual 106 UR5e
+
+10. First Time Use
+
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.
+
+
+
+Recovery When a safety limit is exceeded, the safety system must be restarted. For example, if a joint
+position limit is outside a safety limit, at start-up, Recovery is activated.
+You cannot run programs for the robot when recovery is activated, but the robot arm can be
+manually moved back within limits using Freedrive, or by using the Move tab in PolyScope.
+The safety limits for Recovery are:
+
+Safety Function Limit
+
+Joint Speed Limit 30 °/s
+Speed Limit 250 mm/s
+Force Limit 100 N
+Momentum Limit 10 kg m/s
+Power Limit 80 W
+
+The safety system issues a Stop Category 0 if a violation of these limits appears.
+
+WARNING
+
+Failure to use caution when moving the robot arm in recovery mode can
+lead to hazardous situations.
+
+• Use caution when moving the robot arm back within the limits, as
+limits for the joint positions, the safety planes, and the tool/end
+effector orientation are all disabled in recovery mode.
+
+UR5e 107 User Manual
+
+10. First Time Use
+C
+op
+yr
+ig
+ht
+©
+20
+09
+–2
+02
+4
+by
+
+U
+ni
+ve
+rs
+al
+ R
+ob
+ot
+s 
+A
+/S
+.A
+
+ll
+rig
+ht
+s
+re
+se
+rv
+ed
+.</content></result></sources>",resp_04d990fd6c42ec5600690d4dce809481a092f73ec656b32945,gpt-5-mini-2025-08-07,completed,1762479566.0,10525,447,10972,

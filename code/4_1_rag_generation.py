@@ -3,11 +3,13 @@ RAG generation step
 """
 
 from __future__ import annotations
+import re
 import time
 
 import itertools
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
+import uuid
 from zoneinfo import ZoneInfo
 
 from datetime import datetime
@@ -17,6 +19,10 @@ from dotenv import load_dotenv
 import nltk
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+
+import base64
+import hashlib
+import json
 
 # Download required NLTK data (run once)
 try:
@@ -53,6 +59,57 @@ def _read_text(maybe_path: Optional[str]) -> str:
     p = Path(maybe_path)
     return p.read_text(encoding="utf-8") if p.exists() else maybe_path
 
+
+def make_permutation_id(metadata: Dict[str, Any], question: Optional[str] = None) -> str:
+    """
+    Create a reversible, URL-safe experiment ID with an integrity hash.
+
+    The function serializes metadata + optional question as JSON, 
+    appends a SHA-256 integrity hash, and encodes the result using URL-safe Base64.
+    """
+    payload = {
+        "metadata": metadata,
+        "run_uuid": str(uuid.uuid4()),  # ensure unique each run
+    }
+
+    json_bytes = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+    # Compute SHA-256 digest for uniqueness and integrity
+    digest = hashlib.sha256(json_bytes).digest()
+
+    # Combine JSON + digest (as trailing 8 bytes to shorten)
+    combined = json_bytes + digest[:8]  # short 64-bit hash suffix
+
+    # URL-safe Base64 encoding (strip padding =)
+    encoded = base64.urlsafe_b64encode(combined).decode("ascii").rstrip("=")
+
+    return encoded
+
+
+def parse_permutation_id(pid: str, return_json: bool = False) -> Dict[str, Any]:
+    """
+    Decode and verify a permutation_id created by make_permutation_id().
+
+    Returns the embedded metadata and question if integrity check passes.
+    Raises ValueError if the hash does not match.
+    """
+    # Pad Base64 string (since padding may be stripped)
+    padding = "=" * (-len(pid) % 4)
+    decoded = base64.urlsafe_b64decode(pid + padding)
+
+    # Split JSON bytes and trailing hash
+    json_bytes, digest_suffix = decoded[:-8], decoded[-8:]
+
+    # Verify hash
+    expected_digest = hashlib.sha256(json_bytes).digest()[:8]
+    if digest_suffix != expected_digest:
+        raise ValueError("Integrity check failed — ID may be corrupted or tampered.")
+
+    # Parse JSON payload
+    if return_json:
+        return json_bytes.decode("utf-8")
+    payload = json.loads(json_bytes.decode("utf-8"))
+    return payload
 
 async def run_experiment_async(
     *,
@@ -126,7 +183,20 @@ async def run_experiment_async(
             elapsed_gen = time.time() - start
             end_et = now_et()
 
+            permutation_source = {
+                "approach": approach,
+                "model": model,
+                "reasoning_effort": effort,
+                "top_k": topk,
+                "answer_instructions_id": ai_id,
+                "few_shot_id": fs_id,
+                "max_tokens": mtoks,
+                "effort": effort,
+                "question": q[:100]
+            }
+
             row = {
+                "permutation_id": make_permutation_id(permutation_source),
                 "time_started": start_et,
                 "time_ended": end_et,
                 "total_elapsed_time": f"{elapsed_gen:.2f} Seconds",
@@ -172,18 +242,52 @@ async def run_experiment_async(
     print(f"\nAll results written to {out_csv}")
     return out_csv
 
-asyncio.run(run_experiment_async(
-        test_csv=Path("data/sample_test_questions.csv"),
-        num_replicates=1,
-        approaches=["openai_keyword"],
-        models=["gpt-5-mini-2025-08-07"],
-        max_tokens_list=[500, 750],
-        efforts=["low"],
-        topk_list=[3, 5],
-        ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
-        ans_instr_B=None,
-        fewshot_A=_read_text("prompts/fewshot_A.txt"),
-        fewshot_B=None,
-        out_csv=Path("results/rag_generation.csv"),
-        max_concurrent=5,
-    ))
+
+if __name__ == "__main__":
+    # asyncio.run(run_experiment_async(
+    #         test_csv=Path("data/sample_test_questions.csv"),
+    #         num_replicates=1,
+    #         approaches=["openai_keyword"],
+    #         models=["gpt-5-mini-2025-08-07"],
+    #         max_tokens_list=[500, 750],
+    #         efforts=["low"],
+    #         topk_list=[3, 5],
+    #         ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+    #         ans_instr_B=None,
+    #         fewshot_A=_read_text("prompts/fewshot_A.txt"),
+    #         fewshot_B=None,
+    #         out_csv=Path("results/rag_generation.csv"),
+    #         max_concurrent=5,
+    #     ))
+    # asyncio.run(run_experiment_async(
+    #         test_csv=Path("data/sample_test_questions.csv"),
+    #         num_replicates=1,
+    #         approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
+    #         models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
+    #         max_tokens_list=[5000],
+    #         efforts=["low"],
+    #         topk_list=[3, 7],
+    #         ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+    #         ans_instr_B=None,
+    #         fewshot_A=_read_text("prompts/fewshot_A.txt"),
+    #         fewshot_B=None,
+    #         out_csv=Path("results/rag_generation_all_approach.csv"),
+    #         max_concurrent=5,
+    #     ))    
+    # asyncio.run(run_experiment_async(
+    #         test_csv=Path("data/sample_test_questions.csv"),
+    #         num_replicates=1,
+    #         approaches=["openai_keyword", "openai_semantic"],
+    #         models=["gpt-5-mini-2025-08-07"],
+    #         max_tokens_list=[5000],
+    #         efforts=["low"],
+    #         topk_list=[3],
+    #         ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+    #         ans_instr_B=None,
+    #         fewshot_A=_read_text("prompts/fewshot_A.txt"),
+    #         fewshot_B=None,
+    #         out_csv=Path("results/rag_generation_perm.csv"),
+    #         max_concurrent=5,
+    #     ))
+    print(parse_permutation_id("eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX2tleXdvcmQiLCJlZmZvcnQiOiJsb3ciLCJmZXdfc2hvdF9pZCI6IkEiLCJtYXhfdG9rZW5zIjo1MDAwLCJtb2RlbCI6ImdwdC01LW1pbmktMjAyNS0wOC0wNyIsInF1ZXN0aW9uIjoiSG93IG1hbnkgc2FmZXR5IG1vZGVzIGRvZXMgdGhlIGFybSBoYXZlLCBhbmQgd2hhdCBhcmUgdGhlIG5hbWVzIG9mIGVhY2g_IiwicmVhc29uaW5nX2VmZm9ydCI6ImxvdyIsInRvcF9rIjozfSwicnVuX3V1aWQiOiJiMGYzNmUyYy0wYzQ3LTRiNDItODFlMC1mYTlhOTRmY2JiMzkifVEFhb6vEP_Q", True))
+    # print(parse_permutation_id("eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX3NlbWFudGljIiwiZWZmb3J0IjoibG93IiwiZmV3X3Nob3RfaWQiOiJBIiwibWF4X3Rva2VucyI6NTAwMCwibW9kZWwiOiJncHQtNS1taW5pLTIwMjUtMDgtMDciLCJxdWVzdGlvbiI6IkhvdyBtYW55IHNhZmV0eSBtb2RlcyBkb2VzIHRoZSBhcm0gaGF2ZSwgYW5kIHdoYXQgYXJlIHRoZSBuYW1lcyBvZiBlYWNoPyIsInJlYXNvbmluZ19lZmZvcnQiOiJsb3ciLCJ0b3BfayI6M319eQjdHbahqaw", True))
