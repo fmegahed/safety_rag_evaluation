@@ -176,40 +176,40 @@ def submit_batch(requests: Iterable[Dict[str, Any]], completion_window: str = "2
 # ---------------------------------------------------------------------------
 # ID helpers
 # ---------------------------------------------------------------------------
-_ABBREV_SPLIT = re.compile(r"[_\-\s]+")
+# _ABBREV_SPLIT = re.compile(r"[_\-\s]+")
 
 
-def _abbr(value: str, max_len: int = 3) -> str:
-    value = (value or "").strip()
-    if not value:
-        return "x"
-    parts = [p for p in _ABBREV_SPLIT.split(value) if p]
-    if len(parts) == 1:
-        token = re.sub(r"[^A-Za-z0-9]", "", parts[0])
-        return (token[:max_len] or token[:1]).lower()
-    letters = "".join(p[0] for p in parts if p)
-    return (letters[:max_len] or letters[:1]).lower()
+# def _abbr(value: str, max_len: int = 3) -> str:
+#     value = (value or "").strip()
+#     if not value:
+#         return "x"
+#     parts = [p for p in _ABBREV_SPLIT.split(value) if p]
+#     if len(parts) == 1:
+#         token = re.sub(r"[^A-Za-z0-9]", "", parts[0])
+#         return (token[:max_len] or token[:1]).lower()
+#     letters = "".join(p[0] for p in parts if p)
+#     return (letters[:max_len] or letters[:1]).lower()
 
 
-def make_permutation_id(index: int, metadata: Dict[str, Any]) -> str:
-    approach = _abbr(metadata.get("approach", ""), max_len=3)
-    model = _abbr(metadata.get("model", ""), max_len=2)
-    effort = _abbr(metadata.get("reasoning_effort", ""), max_len=2)
-    ans_id = str(metadata.get("answer_instructions_id") or "A")[:1].lower()
-    fs_id = str(metadata.get("few_shot_id") or "A")[:1].lower()
-    top_k_raw = str(metadata.get("top_k") or "").strip()
-    try:
-        top_k_val = int(float(top_k_raw))
-        top_k = f"k{top_k_val:02d}"
-    except ValueError:
-        top_k = _abbr(top_k_raw, max_len=2)
-    max_tok_raw = str(metadata.get("max_tokens") or "").strip()
-    try:
-        max_tok_val = int(float(max_tok_raw))
-        max_tok = f"t{max_tok_val // 100:02d}"
-    except ValueError:
-        max_tok = _abbr(max_tok_raw, max_len=2)
-    return f"{approach}{model}{ans_id}{fs_id}{effort}{top_k}{max_tok}_{index:04d}"
+# def make_permutation_id(index: int, metadata: Dict[str, Any]) -> str:
+#     approach = _abbr(metadata.get("approach", ""), max_len=3)
+#     model = _abbr(metadata.get("model", ""), max_len=2)
+#     effort = _abbr(metadata.get("reasoning_effort", ""), max_len=2)
+#     ans_id = str(metadata.get("answer_instructions_id") or "A")[:1].lower()
+#     fs_id = str(metadata.get("few_shot_id") or "A")[:1].lower()
+#     top_k_raw = str(metadata.get("top_k") or "").strip()
+#     try:
+#         top_k_val = int(float(top_k_raw))
+#         top_k = f"k{top_k_val:02d}"
+#     except ValueError:
+#         top_k = _abbr(top_k_raw, max_len=2)
+#     max_tok_raw = str(metadata.get("max_tokens") or "").strip()
+#     try:
+#         max_tok_val = int(float(max_tok_raw))
+#         max_tok = f"t{max_tok_val // 100:02d}"
+#     except ValueError:
+#         max_tok = _abbr(max_tok_raw, max_len=2)
+#     return f"{approach}{model}{ans_id}{fs_id}{effort}{top_k}{max_tok}_{index:04d}"
 
 
 def load_judge_inputs_from_csv(csv_path: Path) -> List[JudgeInput]:
@@ -232,7 +232,11 @@ def load_judge_inputs_from_csv(csv_path: Path) -> List[JudgeInput]:
                 "few_shot_id": row.get("few_shot_id", ""),
                 "max_tokens": row.get("max_tokens", ""),
             }
-            permutation_id = make_permutation_id(idx, permutation_source)
+            # permutation_id = make_permutation_id(idx, permutation_source)
+            permutation_id = row.get("permutation_id", None)
+            if permutation_id is None:
+                print("PERMUTATION ID is NULL")
+                return
             records.append(
                 JudgeInput(
                     qa_id=permutation_id,
