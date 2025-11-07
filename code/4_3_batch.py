@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 from zoneinfo import ZoneInfo
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 from openai import OpenAI
 import requests
 
@@ -32,25 +32,9 @@ load_dotenv(override=True)
 # ---------------------------------------------------------------------------
 # Prompt templates (mirrors 3_rag_exp_with_evals.py)
 # ---------------------------------------------------------------------------
-DOC_RELEVANCE_INSTRUCTIONS = """You are a teacher grading a quiz. You will be given a QUESTION and a set of FACTS provided by the student. Here is the grade criteria to follow:
-(1) You goal is to identify FACTS that are completely unrelated to the QUESTION
-(2) If the facts contain ANY keywords or semantic meaning related to the question, consider them relevant
-(3) It is OK if the facts have SOME information that is unrelated to the question as long as (2) is met
 
-Relevance:
-A relevance value of True means that the FACTS contain ANY keywords or semantic meaning related to the QUESTION and are therefore relevant.
-A relevance value of False means that the FACTS are completely unrelated to the QUESTION.
 
-Explain your reasoning in a step-by-step manner to ensure your reasoning and conclusion are correct. Avoid simply stating the correct answer at the outset."""
 
-FAITHFULNESS_INSTRUCTIONS = """You are a teacher grading a quiz. You will be given FACTS and a STUDENT ANSWER. Here is the grade criteria to follow:
-(1) Ensure the STUDENT ANSWER is grounded in the FACTS. (2) Ensure the STUDENT ANSWER does not contain "hallucinated" information outside the scope of the FACTS.
-
-Grounded:
-A grounded value of True means that the student's answer meets all of the criteria.
-A grounded value of False means that the student's answer does not meet all of the criteria.
-
-Explain your reasoning in a step-by-step manner to ensure your reasoning and conclusion are correct. Avoid simply stating the correct answer at the outset."""
 
 HELPFULNESS_INSTRUCTIONS = """You are a teacher grading a quiz. You will be given a QUESTION and a STUDENT ANSWER. Here is the grade criteria to follow:
 (1) Ensure the STUDENT ANSWER is concise and relevant to the QUESTION
@@ -118,36 +102,6 @@ def build_requests(records: Iterable[JudgeInput], judge_model: str = "gpt-5") ->
     requests: List[Dict[str, Any]] = []
     for record in records:
         permutation_id = record.metadata.get("permutation_id") or record.qa_id
-
-        doc_rel_body = _response_body(
-            system_prompt=DOC_RELEVANCE_INSTRUCTIONS,
-            user_prompt=f"FACTS: {record.contexts}\nQUESTION: {record.question}",
-            judge_model=judge_model,
-            metadata={"permutation_id": permutation_id},
-        )
-        requests.append(
-            {
-                "custom_id": f"{record.qa_id}__doc_relevance",
-                "method": "POST",
-                "url": "/v1/responses",
-                "body": doc_rel_body,
-            }
-        )
-
-        faithfulness_body = _response_body(
-            system_prompt=FAITHFULNESS_INSTRUCTIONS,
-            user_prompt=f"FACTS: {record.contexts}\nSTUDENT ANSWER: {record.generated_answer}",
-            judge_model=judge_model,
-            metadata={"permutation_id": permutation_id},
-        )
-        requests.append(
-            {
-                "custom_id": f"{record.qa_id}__faithfulness",
-                "method": "POST",
-                "url": "/v1/responses",
-                "body": faithfulness_body,
-            }
-        )
 
         helpfulness_body = _response_body(
             system_prompt=HELPFULNESS_INSTRUCTIONS,
@@ -324,7 +278,9 @@ def main() -> None:
 
     print(f"Prepared {len(requests)} requests. JSONL written to {args.output}")
     # submission = submit_batch(requests)
-    print(json.dumps(submission, indent=2))
+    #print(json.dumps(submission, indent=2))
+    #batch_id = submission.id
+    #set_key("OPENAI_BATCH_ID", batch_id)
 
     print(f"Prepared {len(requests)} requests. JSONL written to {args.output}")
 

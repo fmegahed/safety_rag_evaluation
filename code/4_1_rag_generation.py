@@ -243,7 +243,26 @@ async def run_experiment_async(
     return out_csv
 
 
+
 if __name__ == "__main__":
+    asyncio.run(run_experiment_async(
+        test_csv=Path("data/gold_set_part_4.csv"),
+        num_replicates=1,
+        approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
+        models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
+        max_tokens_list=[5000],
+        efforts=["low"],
+        topk_list=[3, 7],
+        ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+        ans_instr_B=None,
+        fewshot_A=_read_text("prompts/fewshot_A.txt"),
+        fewshot_B=None,
+        out_csv=Path("results/gold_set_part_1.csv"), # appends to this file
+        max_concurrent=5,
+    )) 
+
+
+
     # asyncio.run(run_experiment_async(
     #         test_csv=Path("data/sample_test_questions.csv"),
     #         num_replicates=1,

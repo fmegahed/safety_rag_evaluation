@@ -1,0 +1,31 @@
+question,gold_answer
+How do I power up the control box?,"Press the power button on the teach pendant. If it is the first boot, you may see a ""Getting Started"" screen. "
+What is the latency of messages sent via tool connectors?,"2ms - 4ms, from the time the message is written on the PC to the start of the message on the RS485."
+What check procedures do I need to follow after modifying the robot arm?,"Yes, there is a list of tests to conduct after making a modification to the robot arm. 
+Verify all safety inputs and outputs are correctly connected.
+Test all connected safety input and output, including devices common to multiple
+machines or robots, are functioning as intended.
+Test emergency stop buttons and inputs to verify the robot stops and the brakes engage.
+Test safeguard inputs to verify the robot motion stops. If safeguard reset is configured,
+check that it functions as intended.
+Look at the initialization screen, activate the reduced input and verify the screen changes.
+Change the operational mode to verify the mode icon changes in top right corner of
+PolyScope screen.
+Test the 3-position enabling device to verify that pressing to the center on position enables
+motion in manual mode at a reduced speed.
+If the Emergency Stop outputs are used, press the Emergency Stop push-button and
+verify that there is a stop of the whole system.
+Test the system connected to Robot Moving output, Robot Not Stopping output, Reduced
+Mode output, or Not Reduced Mode output to verify the output changes are detected.
+Determine the commissioning requirements of your robot application."
+What are the main safety precautions that should be taken before performing maintenance on a Universal Robot Arm?,"Disconnect main power, discharge control box, observe ESD regulations, and prevent dust/water ingress."
+What can happen if you open the control box power supply too soon after switching off?,It can cause injury from residual high voltage (up to 600 V) still present in the power supply.
+What are the tool attachments I can put on the universal robot relating to moving objects with the arm?,"Many kinds of grippers such as parallel, three-finger, vacuum, magnetic, soft, and precision grippers. "
+What are the tool attachments I can put on the universal robot relating to welding?,Welding and arc welding attatchments.
+How should the earth (ground) connection be checked after maintenance?,Verify the PE grounding screw connection inside the control box before re-powering.
+What is Reduced Mode? When is it used?,"Reduced Mode activates lower limits for speed, force, and distance near safety zones or planes."
+What are the four collaborative operation techniques defined in ISO 10218-1?,"Safety-rated monitored stop, hand guiding, speed & separation monitoring, power & force limiting."
+I want to control the arm using either admittance or impedance control schemes by reading joint positions/torques and commanding joint velocities/torques at a high rate. Can this be implemented using the standard hardware and controller?,"Yes, admittance and impendance control schemes can be implemented using standard and controler, but it would require a controller with direct torque control or low-level research API to command the velocities the fastest rate for UR robots is 125 Hz"
+What is a pinch hazard in robot operation?,A pinch hazard occurs when body parts can be caught between moving robot parts or surfaces.
+"What is the risk of EMC interference, and how can it be avoided?",High electromagnetic fields can cause malfunction; avoid long cables and maintain grounding.
+What standard defines the performance levels of UR safety functions?,"EN ISO 13849-1, Performance Level d (PLd), Category 3."
