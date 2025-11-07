@@ -223,20 +223,20 @@ def load_judge_inputs_from_csv(csv_path: Path) -> List[JudgeInput]:
     with csv_path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for idx, row in enumerate(reader, start=1):
-            permutation_source = {
-                "approach": row.get("approach", ""),
-                "model": row.get("model", ""),
-                "reasoning_effort": row.get("reasoning_effort", ""),
-                "top_k": row.get("top_k", ""),
-                "answer_instructions_id": row.get("answer_instructions_id", ""),
-                "few_shot_id": row.get("few_shot_id", ""),
-                "max_tokens": row.get("max_tokens", ""),
-            }
+            # permutation_source = {
+            #     "approach": row.get("approach", ""),
+            #     "model": row.get("model", ""),
+            #     "reasoning_effort": row.get("reasoning_effort", ""),
+            #     "top_k": row.get("top_k", ""),
+            #     "answer_instructions_id": row.get("answer_instructions_id", ""),
+            #     "few_shot_id": row.get("few_shot_id", ""),
+            #     "max_tokens": row.get("max_tokens", ""),
+            # }
             # permutation_id = make_permutation_id(idx, permutation_source)
             permutation_id = row.get("permutation_id", None)
-            if permutation_id is None:
-                print("PERMUTATION ID is NULL")
-                return
+            if not permutation_id:
+                raise ValueError(f"Missing permutation_id in row {idx}: {row}")
+
             records.append(
                 JudgeInput(
                     qa_id=permutation_id,
