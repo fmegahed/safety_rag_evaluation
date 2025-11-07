@@ -129,6 +129,6 @@ async def run_local_math(
 
 
 asyncio.run(run_local_math(
-    q_a_csv=Path("results/rag_generation.csv"),
-    max_concurrent=20,
+    q_a_csv=Path("results/gold_set_part_1.csv"),
+    max_concurrent=500,
 ))
