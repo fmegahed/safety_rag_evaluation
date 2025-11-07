@@ -1,133 +1,148 @@
 """
-Turn the widened JSON from step 4.4 into a CSV with the judge columns from step 3.
+Download a finished OpenAI Batch run, persist the raw JSONL payload, and export per-record
+judging metadata to CSV for downstream analysis.
 """
-
 from __future__ import annotations
 
-import csv
 import json
+import os
 import re
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
+
+import pandas as pd
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv(override=True)
+
+# Resolve the repo root regardless of where this script is executed from.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RESULTS_DIR = PROJECT_ROOT / "results"
+RAW_PATH = RESULTS_DIR / "4_5_batch_output.jsonl"
+JSON_PATH = RESULTS_DIR / "4_5_batch_output.json"
+CSV_PATH = RESULTS_DIR / "4_5_batch_output.csv"
+
+# Allow overriding the Batch ID via environment variables.
+DEFAULT_BATCH_ID = "batch_690ae971d7048190a982f22185698051"
+BATCH_ID = os.environ.get("OPENAI_BATCH_ID") or DEFAULT_BATCH_ID
+
+client = OpenAI()
 
 
-SOURCE_CSV = Path("results/rag_generation.csv")
-BATCH_JSON = Path("results/4_5_batch_output.json")
-OUT_CSV = Path("results/4_5_judge_results.csv")
+def _load_jsonl(path: Path) -> List[Dict[str, Any]]:
+    """Load a JSONL file from disk."""
+    rows: List[Dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if line:
+                rows.append(json.loads(line))
+    return rows
 
 
-def make_permutation_id(index: int, row: Dict[str, Any]) -> str:
-    def abbr(value: str, max_len: int) -> str:
-        value = (value or "").strip()
-        if not value:
-            return "x"
-        parts = re.split(r"[_\-\s]+", value)
-        parts = [p for p in parts if p]
-        if len(parts) == 1:
-            token = re.sub(r"[^A-Za-z0-9]", "", parts[0])
-            return (token[:max_len] or token[:1]).lower()
-        letters = "".join(p[0] for p in parts if p)
-        return (letters[:max_len] or letters[:1]).lower()
+def extract_record_info(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Extract key fields from a single batch record."""
+    info = {
+        "custom_id": record.get("custom_id"),
+        "text": None,
+        "judge_model": None,
+        "temperature": None,
+        "permutation_id": None,
+    }
 
-    approach = abbr(row.get("approach", ""), 3)
-    model = abbr(row.get("model", ""), 2)
-    effort = abbr(row.get("reasoning_effort", ""), 2)
-    ans_id = str(row.get("answer_instructions_id") or "A")[:1].lower()
-    fs_id = str(row.get("few_shot_id") or "A")[:1].lower()
+    response = record.get("response") or {}
+    body = response.get("body") or {}
 
-    top_k_raw = str(row.get("top_k") or "").strip()
-    try:
-        top_k_val = int(float(top_k_raw))
-        top_k = f"k{top_k_val:02d}"
-    except ValueError:
-        top_k = abbr(top_k_raw, 2)
+    info["judge_model"] = body.get("model")
+    info["temperature"] = body.get("temperature")
 
-    max_tok_raw = str(row.get("max_tokens") or "").strip()
-    try:
-        max_tok_val = int(float(max_tok_raw))
-        max_tok = f"t{max_tok_val // 100:02d}"
-    except ValueError:
-        max_tok = abbr(max_tok_raw, 2)
+    metadata = body.get("metadata") or {}
+    info["permutation_id"] = metadata.get("permutation_id")
 
-    return f"{approach}{model}{ans_id}{fs_id}{effort}{top_k}{max_tok}_{index:04d}"
+    text_parts = []
+    for item in body.get("output") or []:
+        if item.get("type") == "message":
+            for content in item.get("content") or []:
+                if content.get("type") == "output_text" and content.get("text"):
+                    text_parts.append(content["text"].strip())
+    info["text"] = "\n".join(text_parts) if text_parts else None
+
+    return info
 
 
-def extract_flag(text: str | None, keyword: str) -> str:
-    if not text:
-        return ""
-    match = re.search(rf"((?<={keyword}:\s)|(?<={keyword}:))(True|False)", text)
-    return match.group(0) if match else ""
+def extract_boolean_answer(text: str | None, prefix_word: str) -> str | None:
+    """Return the boolean value that follows the requested prefix in the judge output."""
+    if not text or not prefix_word:
+        return None
+    pattern = rf"(?<={re.escape(prefix_word)}:)\s*(True|False)"
+    match = re.search(pattern, text)
+    return match.group(1) if match else None
 
 
-with SOURCE_CSV.open("r", encoding="utf-8", newline="") as handle:
-    reader = csv.DictReader(handle)
-    if reader.fieldnames is None:
-        raise SystemExit(f"{SOURCE_CSV} is missing headers.")
-    base_fields = list(reader.fieldnames)
+def extract_judge_type(custom_id: str | None) -> str | None:
+    """Return the judge_type part from a custom_id like 'qa123__doc_relevance'."""
+    if custom_id and "__" in custom_id:
+        _, judge_type = custom_id.split("__", 1)
+        return judge_type
+    return None
+
+
+def download_batch_results(batch_id: str) -> List[Dict[str, Any]]:
+    """Download the Batch output file and return the parsed JSONL records."""
+    batch = client.batches.retrieve(batch_id).model_dump()
+    if batch.get("status") != "completed":
+        raise SystemExit(f"Batch {batch_id} is not complete yet (status={batch.get('status')!r}).")
+
+    output_file_id = batch.get("output_file_id")
+    if not output_file_id:
+        raise SystemExit(f"Batch {batch_id} does not expose an output_file_id.")
+
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    with client.files.with_streaming_response.content(output_file_id) as stream:
+        stream.stream_to_file(RAW_PATH)
+
+    records = _load_jsonl(RAW_PATH)
+    JSON_PATH.write_text(json.dumps(records, indent=2), encoding="utf-8")
+    return records
+
+
+def main() -> None:
+    raw_records = download_batch_results(BATCH_ID)
+
+    mapping_judge_type_key = {
+        "doc_relevance": "Relevance",
+        "correctness_vs_ref": "Correctness",
+        "helpfulness": "Relevance",
+        "faithfulness": "Grounded",
+    }
+
     rows = []
-    for idx, row in enumerate(reader, start=1):
-        row = dict(row)
-        row["permutation_id"] = make_permutation_id(idx, row)
-        rows.append(row)
+    for record in raw_records:
+        rec = extract_record_info(record)
+        custom_id = rec.get("custom_id")
+        judge_type = extract_judge_type(custom_id)
+        judge_answer = extract_boolean_answer(
+            rec.get("text"),
+            mapping_judge_type_key.get(judge_type, ""),
+        )
 
-if not rows:
-    raise SystemExit("No rows found in rag_generation.csv.")
+        rows.append(
+            {
+                "custom_id": rec.get("custom_id"),
+                "text": rec.get("text"),
+                "judge_model": rec.get("judge_model"),
+                "temperature": rec.get("temperature"),
+                "permutation_id": rec.get("permutation_id"),
+                "judge_type": judge_type,
+                "judge_answer": judge_answer,
+            }
+        )
 
-pivot_data = json.loads(BATCH_JSON.read_text(encoding="utf-8"))
-if not isinstance(pivot_data, list):
-    raise SystemExit("Batch JSON should be a list of records.")
+    pd.DataFrame(rows).to_csv(CSV_PATH, index=False, encoding="utf-8")
+    print(f"Wrote parsed batch results to {CSV_PATH}")
 
-pivot_map: Dict[str, Dict[str, Any]] = {}
-for item in pivot_data:
-    perm = item.get("permutation_id") or item.get("qa_id")
-    if perm:
-        pivot_map[perm] = item
 
-judge_cols = [
-    "judge_doc_relevance",
-    "judge_doc_relevance_answer",
-    "judge_faithfulness",
-    "judge_faithfulness_answer",
-    "judge_helpfulness",
-    "judge_helpfulness_answer",
-    "judge_correctness_vs_ref",
-    "judge_correctness_vs_ref_answer",
-]
-
-header = base_fields + ["permutation_id"]
-for col in judge_cols:
-    if col not in header:
-        header.append(col)
-
-OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
-
-missing = []
-with OUT_CSV.open("w", encoding="utf-8", newline="") as handle:
-    writer = csv.DictWriter(handle, fieldnames=header)
-    writer.writeheader()
-
-    for row in rows:
-        judge = pivot_map.get(row["permutation_id"])
-        doc_relevance = judge.get("doc_relevance_text") if judge else ""
-        faithfulness = judge.get("faithfulness_text") if judge else ""
-        helpfulness = judge.get("helpfulness_text") if judge else ""
-        correctness = judge.get("correctness_vs_ref_text") if judge else ""
-
-        row["judge_doc_relevance"] = doc_relevance
-        row["judge_doc_relevance_answer"] = extract_flag(doc_relevance, "Relevance")
-        row["judge_faithfulness"] = faithfulness
-        row["judge_faithfulness_answer"] = extract_flag(faithfulness, "Grounded")
-        row["judge_helpfulness"] = helpfulness
-        row["judge_helpfulness_answer"] = extract_flag(helpfulness, "Relevance")
-        row["judge_correctness_vs_ref"] = correctness
-        row["judge_correctness_vs_ref_answer"] = extract_flag(correctness, "Correctness")
-
-        if judge is None:
-            missing.append(row["permutation_id"])
-
-        writer.writerow({key: row.get(key, "") for key in header})
-
-print(
-    f"Wrote {len(rows)} rows to {OUT_CSV}\n"
-    f"Missing judge groups: {len(missing)}"
-)
+if __name__ == "__main__":
+    main()
