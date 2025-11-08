@@ -1,14 +1,11 @@
 import json
+import os
 from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv(override=True)
 client = OpenAI()
 
-batch_id = {
-  "file_id": "file-1kVnWo4YX6ZKE9Qs1ZD4tm",
-  "batch_id": "batch_690ae971d7048190a982f22185698051",
-  "status": "validating"
-}
+BATCH_ID = os.environ.get("OPENAI_BATCH_ID") 
 
-batch = client.batches.retrieve(batch_id["batch_id"])
+batch = client.batches.retrieve(BATCH_ID)
 print(json.dumps(batch.model_dump(), indent=2))

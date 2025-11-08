@@ -148,6 +148,16 @@ async def run_experiment_async(
     loop = asyncio.get_event_loop()
     executor = ThreadPoolExecutor(max_workers=max_concurrent)
 
+    # print(len(approaches))
+    # print(len(max_tokens_list))
+    # print(len(models))
+    # print(len(efforts))
+    # print(len(topk_list))
+    # print(len(ai_ids))
+    # print(len(fs_ids))
+    # print(len(df))                   
+    # print(int(num_replicates))
+    # return
     total_loop_count = (
         len(approaches)
         * len(models)
@@ -160,6 +170,7 @@ async def run_experiment_async(
         * int(num_replicates)
     )
     print(f"Total permutations: {total_loop_count}")
+    # print(f"Total permutations: {df}")
     # return
     async def process_one(q: str, gold: str, approach: str, model: str, mtoks: int, effort: str,
                           topk: int, ai_id: str, fs_id: str, rep: int):
@@ -245,21 +256,21 @@ async def run_experiment_async(
 
 
 if __name__ == "__main__":
-    asyncio.run(run_experiment_async(
-        test_csv=Path("data/gold_set_part_4.csv"),
-        num_replicates=1,
-        approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
-        models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
-        max_tokens_list=[5000],
-        efforts=["low"],
-        topk_list=[3, 7],
-        ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
-        ans_instr_B=None,
-        fewshot_A=_read_text("prompts/fewshot_A.txt"),
-        fewshot_B=None,
-        out_csv=Path("results/gold_set_part_1.csv"), # appends to this file
-        max_concurrent=5,
-    )) 
+    # asyncio.run(run_experiment_async(
+    #     test_csv=Path("data/gold_set_part_4.csv"),
+    #     num_replicates=1,
+    #     approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
+    #     models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
+    #     max_tokens_list=[5000],
+    #     efforts=["low"],
+    #     topk_list=[3, 7],
+    #     ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
+    #     ans_instr_B=None,
+    #     fewshot_A=_read_text("prompts/fewshot_A.txt"),
+    #     fewshot_B=None,
+    #     out_csv=Path("results/gold_set_part_1.csv"), # appends to this file
+    #     max_concurrent=1,
+    # )) 
 
 
 
@@ -308,5 +319,5 @@ if __name__ == "__main__":
     #         out_csv=Path("results/rag_generation_perm.csv"),
     #         max_concurrent=5,
     #     ))
-    print(parse_permutation_id("eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX2tleXdvcmQiLCJlZmZvcnQiOiJsb3ciLCJmZXdfc2hvdF9pZCI6IkEiLCJtYXhfdG9rZW5zIjo1MDAwLCJtb2RlbCI6ImdwdC01LW1pbmktMjAyNS0wOC0wNyIsInF1ZXN0aW9uIjoiSG93IG1hbnkgc2FmZXR5IG1vZGVzIGRvZXMgdGhlIGFybSBoYXZlLCBhbmQgd2hhdCBhcmUgdGhlIG5hbWVzIG9mIGVhY2g_IiwicmVhc29uaW5nX2VmZm9ydCI6ImxvdyIsInRvcF9rIjozfSwicnVuX3V1aWQiOiJiMGYzNmUyYy0wYzQ3LTRiNDItODFlMC1mYTlhOTRmY2JiMzkifVEFhb6vEP_Q", True))
+    print(parse_permutation_id("eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX3NlbWFudGljIiwiZWZmb3J0IjoibG93IiwiZmV3X3Nob3RfaWQiOiJBIiwibWF4X3Rva2VucyI6NTAwMCwibW9kZWwiOiJncHQtNS1uYW5vLTIwMjUtMDgtMDciLCJxdWVzdGlvbiI6IldoYXQgaXMgUmVkdWNlZCBNb2RlPyBXaGVuIGlzIGl0IHVzZWQ_IiwicmVhc29uaW5nX2VmZm9ydCI6ImxvdyIsInRvcF9rIjo3fSwicnVuX3V1aWQiOiI2Y2QzMTE0NS01M2FkLTQyMmUtYjQyMi04ZjcxMzBhYjQxODMifWV4L38UvcTi", True))
     # print(parse_permutation_id("eyJtZXRhZGF0YSI6eyJhbnN3ZXJfaW5zdHJ1Y3Rpb25zX2lkIjoiQSIsImFwcHJvYWNoIjoib3BlbmFpX3NlbWFudGljIiwiZWZmb3J0IjoibG93IiwiZmV3X3Nob3RfaWQiOiJBIiwibWF4X3Rva2VucyI6NTAwMCwibW9kZWwiOiJncHQtNS1taW5pLTIwMjUtMDgtMDciLCJxdWVzdGlvbiI6IkhvdyBtYW55IHNhZmV0eSBtb2RlcyBkb2VzIHRoZSBhcm0gaGF2ZSwgYW5kIHdoYXQgYXJlIHRoZSBuYW1lcyBvZiBlYWNoPyIsInJlYXNvbmluZ19lZmZvcnQiOiJsb3ciLCJ0b3BfayI6M319eQjdHbahqaw", True))
