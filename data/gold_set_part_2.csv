@@ -1,0 +1,24 @@
+question,gold_answer
+I dropped some liquid on my robot arm. Will that break it or cause a safety issue?,"It has the potential for a break or safety issue. To reduce risk you should stop the machine properly and verify no liquid was in contact with the control box especially. Otherwise, dry the machine after it has cooled."
+How do I lock the X axis from rotating on the arm when in freedrive mode?,"On the freedrive pane, there are toggles to lock X, Y, Z, and RX, RY, and RZ axes. To lock the rotational X axis you should toggle off the RX option."
+What does the symbol with 3 arrowed lines emerging from the center of the icon mean?,"This is a icon used for the translation control mode, meaning movement is allowed through all axes, except rotational."
+What should I do to avoid a pinching hazard?,"Remove obstacles in the area around the robot. Set up stricter safety planes and joint limits, and check the recommended special needs for your robot arm. "
+How much space do I need to leave around the control box?,"For the UR5e model, the minimum clearance is 50mm on each side. The recommended is 200mm. "
+What are the external connection ports on the robot?,"Teach Pendant Port, SD Card slot, Ethernet, USB 2.0 and USB 3.0, Mini Displayport, 10A Mini Blade Fuse"
+"What is the meaning of the ""yellow with red text"" color scheme of the electrical interface groups inside the control box?",The yellow with red text color indicates that that group is related to dedicated safety signals.
+What are the safety limits when in recovery mode?,"The current safety limits will be listed and set in the safety settings. If no safety limits have been changed, the default safety limits are as follows:
+Join Speed Limit: 30 degrees per second.
+Speed Limit: 250 mm/s. 
+Force Limit: 100N. 
+Momentum Limit: 10 kg m/s. 
+Power Limit: 80W."
+How do I ensure the robot elbow and tool remain within a certain area/boundary?,You can configure Safety Planes. Safety planes limit the tool spheres and elbow movement to stay within certain confines set up by up to 8 safety planes.
+What risks do I need to be aware of for the safety planes?,"Safety planes only limit the tool and elbow, but not the overall arm. Part of the arm can still exceed the plane, only the elbow and tool are restricted. If the tool must move in a certain way, parts of the arm can still go outside the safety plane. "
+What are the limitations of using safety planes?,Safety planes can only limit the tool and the elbow from going beyond the plane. Other parts of the arm cannot be configured to respect safety planes.
+Can I skip setting a password for the safety settings?,No. Failure to set a password can result in injury or death due to unauthorized changes to the configuration system by any user.
+What could happen if I fail to do an application risk assessment?,"Failure to conduct a risk assessment can increase the risk involved in using the machine. The assessment addresses severity of possible harm, likelihood of occurrence, and avoiding hazardous situations. Failure to take these risks into account can be dangerous."
+Who should perform the risk assessment for the arm?,Risk assessment is the responsibility of the integrator. The user of the robot arm can be the integrator.
+Why is the robot arm moving slowly or stopping when I start it? It is not near anything and I have done a risk assessment.,"The robot arm running slowly when started could be due to many potential things.
+The speed settings could be turned down.
+The environment temperature could be too low or high. Temperatures outside of 0-50C can reduce the speed. 
+The robot could be in reduced mode, which can occur when the arm reaches outside it's specified reduced mode safety planes."

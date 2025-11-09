@@ -1,1 +1,3 @@
 .env
+code/tests/__pycache__/
+venv/

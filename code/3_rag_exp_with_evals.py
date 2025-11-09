@@ -33,8 +33,8 @@ Usage
 """
 
 from __future__ import annotations
+import time
 
-import requests
 import itertools
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -46,7 +46,9 @@ from dotenv import load_dotenv
 
 from langsmith import traceable
 
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel
 from langchain_openai import ChatOpenAI
 
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
@@ -54,20 +56,27 @@ from rouge_score import rouge_scorer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
+import re
 
 # Download required NLTK data (run once)
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt')
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
 
 # Load .env so API keys and endpoints are available everywhere
 load_dotenv(override=True)
 
 # Import the function from file 2 (which should expose retrieve_and_answer and be import-safe)
-response = requests.get("https://raw.githubusercontent.com/fmegahed/safety_rag_evaluation/refs/heads/main/code/2_rag.py")
+# response = requests.get("https://raw.githubusercontent.com/fmegahed/safety_rag_evaluation/refs/heads/main/code/2_rag.py")
 namespace = {}
-exec(response.text, namespace)
+with open("code/2_rag.py") as f:
+    exec(f.read(), namespace)
+# exec(response.text, namespace)
 retrieve_and_answer = namespace["retrieve_and_answer"]
 
 # Provenance value from file 0
@@ -84,6 +93,13 @@ def _read_text(maybe_path: Optional[str]) -> str:
     p = Path(maybe_path)
     return p.read_text(encoding="utf-8") if p.exists() else maybe_path
 
+def extract_boolean_answer(text: str, prefix_word: str) -> str:
+    if text is None:
+        return None
+    match = re.search(rf"((?<={prefix_word}:\s)|(?<={prefix_word}:))(True|False)", text)
+    if match is None or match.group(0) is None:
+        return None
+    return match.group(0)
 
 # Inspired by https://python.langchain.com/docs/integrations/providers/langfair/
 # Common metrics reported in either `CounterfactualMetrics` or `AutoEval` 
@@ -134,8 +150,8 @@ def judge_with_langsmith(
     """Run LLM-as-judge prompts using a specified model.
     Returns a dict of raw model outputs for the four judgments.
     """
+    
     llm = ChatOpenAI(model=judge_model, temperature=0)
-    out: Dict[str, Any] = {}
 
     # Document relevance
     retrieval_relevance_instructions = """You are a teacher grading a quiz. You will be given a QUESTION and a set of FACTS provided by the student. Here is the grade criteria to follow:
@@ -153,12 +169,7 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         ("system", retrieval_relevance_instructions),
         ("user", "FACTS: {contexts}\nQUESTION: {question}")
     ])
-    out["doc_relevance"] = (
-        doc_rel_prompt
-        .pipe(llm)
-        .invoke({"question": question, "contexts": contexts})
-        .content
-    )
+    doc_rel_chain = doc_rel_prompt | llm | StrOutputParser()
 
     # Faithfulness (groundedness/hallucination check)
     grounded_instructions = """You are a teacher grading a quiz. You will be given FACTS and a STUDENT ANSWER. Here is the grade criteria to follow:
@@ -174,12 +185,7 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         ("system", grounded_instructions),
         ("user", "FACTS: {contexts}\nSTUDENT ANSWER: {answer}")
     ])
-    out["faithfulness"] = (
-        faithful_prompt
-        .pipe(llm)
-        .invoke({"answer": answer, "contexts": contexts})
-        .content
-    )
+    faithful_chain = faithful_prompt | llm | StrOutputParser()
 
     # Helpfulness (relevance)
     relevance_instructions = """You are a teacher grading a quiz. You will be given a QUESTION and a STUDENT ANSWER. Here is the grade criteria to follow:
@@ -196,12 +202,13 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
         ("system", relevance_instructions),
         ("user", "QUESTION: {question}\nSTUDENT ANSWER: {answer}")
     ])
-    out["helpfulness"] = (
-        helpful_prompt
-        .pipe(llm)
-        .invoke({"question": question, "answer": answer})
-        .content
-    )
+    helpful_chain = helpful_prompt | llm | StrOutputParser()
+
+    chains: Dict[str, Any] = {
+        "doc_relevance": doc_rel_chain,
+        "faithfulness": faithful_chain,
+        "helpfulness": helpful_chain,
+    }
 
     # Correctness vs reference
     if gold is not None and len(gold.strip()) > 0:
@@ -219,17 +226,21 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
             ("system", correctness_instructions),
             ("user", "QUESTION: {question}\nGROUND TRUTH ANSWER: {reference}\nSTUDENT ANSWER: {answer}")
         ])
-        out["correctness_vs_ref"] = (
-            correct_prompt
-            .pipe(llm)
-            .invoke({"question": question, "answer": answer, "reference": gold})
-            .content
-        )
-    else:
-        out["correctness_vs_ref"] = None
+        chains["correctness_vs_ref"] = correct_prompt | llm | StrOutputParser()
 
-    return out
+    parallel = RunnableParallel(**chains)
+    inputs = {
+        "question": question,
+        "answer": answer,
+        "reference": gold,
+        "contexts": contexts,
+    }
+    results = parallel.invoke(inputs)
 
+    if "correctness_vs_ref" not in results:
+        results["correctness_vs_ref"] = None
+    
+    return results
 
 def run_experiment(
     *,
@@ -312,7 +323,30 @@ def run_experiment(
 
     # Track if we need to write headers
     write_header = not out_csv.exists()
-
+    total_loop_count = (
+        len(approaches)
+        * len(models)
+        * len(max_tokens_list)
+        * len(efforts)
+        * len(topk_list)
+        * len(ai_ids)
+        * len(fs_ids)
+        * len(df)                   
+        * int(num_replicates)
+    )
+    index = 0
+    
+    print("Loop dimensions:")
+    print(f"approaches      = {len(approaches)}")
+    print(f"models          = {len(models)}")
+    print(f"max_tokens_list = {len(max_tokens_list)}")
+    print(f"efforts         = {len(efforts)}")
+    print(f"topk_list       = {len(topk_list)}")
+    print(f"ai_ids          = {len(ai_ids)}")
+    print(f"fs_ids          = {len(fs_ids)}")
+    print(f"df rows         = {len(df)}")
+    print(f"replicates      = {int(num_replicates)}")
+    
     for approach, model, mtoks, effort, topk, ai_id, fs_id in itertools.product(
         approaches, models, max_tokens_list, efforts, topk_list, ai_ids, fs_ids,
     ):
@@ -324,6 +358,9 @@ def run_experiment(
             gold = str(r["gold_answer"]) if pd.notna(r["gold_answer"]) else None
 
             for rep in range(1, int(num_replicates) + 1):
+                index += 1
+                print(f"On Pass {index} / {total_loop_count}")
+                generate_answer_start = time.time()
                 generated, hits, meta = retrieve_and_answer(
                     question=q,
                     approach=approach,
@@ -335,14 +372,18 @@ def run_experiment(
                     answer_instructions=ans,
                     few_shot_preamble=fs,
                 )
-
+                generate_answer_start_elapsed = time.time() - generate_answer_start
+                
+                metrics_start = time.time()
                 mets = (
                     langfair_metrics(generated, gold or "")
                     if gold is not None
                     else {"cosine": None, "rougeL": None, "bleu": None}
                 )
+                metrics_elapsed = time.time() - metrics_start
 
                 contexts = "".join(h.get("text", "") for h in hits)
+                judge_start = time.time()
                 judges = judge_with_langsmith(
                     question=q,
                     answer=generated,
@@ -350,9 +391,14 @@ def run_experiment(
                     contexts=contexts,
                     judge_model=judge_model,
                 )
-
+                judge_elapsed = time.time() - judge_start
+                total_elapsed = generate_answer_start_elapsed + metrics_elapsed + judge_elapsed
                 row = {
                     "datetime": now_et(),
+                    "generate_elapsed_time": f"{generate_answer_start_elapsed:.2f} Seconds",
+                    "metrics_elapsed_time": f"{metrics_elapsed:.2f} Seconds",
+                    "judge_elapsed_time": f"{judge_elapsed:.2f} Seconds",
+                    "total_elapsed_time": f"{total_elapsed:.2f} Seconds",
                     "min_words_for_subsplit": MIN_WORDS_FOR_SUBSPLIT,
                     "approach": approach,
                     "model": model,
@@ -370,9 +416,13 @@ def run_experiment(
                     "rougeL": mets.get("rougeL"),
                     "bleu": mets.get("bleu"),
                     "judge_doc_relevance": judges.get("doc_relevance"),
+                    "judge_doc_relevance_answer": extract_boolean_answer(judges.get("doc_relevance"), "Relevance"),
                     "judge_faithfulness": judges.get("faithfulness"),
+                    "judge_faithfulness_answer": extract_boolean_answer(judges.get("faithfulness"), "Grounded"),
                     "judge_helpfulness": judges.get("helpfulness"),
+                    "judge_helpfulness_answer": extract_boolean_answer(judges.get("helpfulness"), "Relevance"),
                     "judge_correctness_vs_ref": judges.get("correctness_vs_ref"),
+                    "judge_correctness_vs_ref_answer": extract_boolean_answer(judges.get("correctness_vs_ref"), "Correctness"),
                     **{f"meta_{k}": v for k, v in (meta or {}).items()},
                 }
 
@@ -395,15 +445,15 @@ def run_experiment(
 out = run_experiment(
     test_csv=Path("data/sample_test_questions.csv"),
     num_replicates=3,
-    approaches=["openai_keyword", "openai_semantic", "lc_bm25", "graph_eager", "graph_mmr", "vanilla"],
-    models=["gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"],
-    max_tokens_list=[500, 1000, 2500, 5000],
-    efforts=["minimal", "low", "medium", "high"],
-    topk_list=[3, 5, 7, 10],
+    approaches=["openai_keyword"],
+    models=["gpt-5-mini-2025-08-07"],
+    max_tokens_list=[250],
+    efforts=["low"],
+    topk_list=[10],
     ans_instr_A=_read_text("prompts/ans_instr_A.txt"),
     ans_instr_B=None,
     fewshot_A=_read_text("prompts/fewshot_A.txt"),
     fewshot_B=None,
-    out_csv=Path("results/experiment_results_with_replicates.csv"),
+    out_csv=Path("results/experiment_results_with_replicates_parrallel.csv"),
     judge_model="gpt-5",
 )

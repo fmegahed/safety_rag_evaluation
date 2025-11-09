@@ -1,0 +1,94 @@
+question,gold_answer,,,,,,,,,,,,,,,,,,,,,,
+What safety modes does the robot arm have?,"The robot arm has three safety modes. Normal mode, reduced mode, and recovery mode. ",,,,,,,,,,,,,,,,,,,,,,
+What happens if my robot stopped in 1000ms when my stopping time safety limit is set to 200ms?,The robot arm will enter recovery mode because the safety limits have been violated. ,,,,,,,,,,,,,,,,,,,,,,
+What mode do I need to be in to load a program?,"You need to be in Automatic Mode to load and execute a program, but you need to be in manual mode to modify and create new programs.",,,,,,,,,,,,,,,,,,,,,,
+How can I set up my active program so that I only need to modify 1 or 2 variables each run?,"If you only want to modify 1 or 2 variables during each run of a program, you can favorite specific program variables so you can access them easier and not go through other variables. ",,,,,,,,,,,,,,,,,,,,,,
+What are the network configuration requirements to use the network features of the robot?,"The network requirements suggest that only trusted devices should be connected to the local area network. There must be no inbound connections from adjacent networks to the robot, outgoing connections from the robot are to be restricted to allow the smallest relevant set of specific ports, protocols and addresses. Only URCaps and magic scripts from trusted partners can be used and only after verifying their authenticity and integrity. ",,,,,,,,,,,,,,,,,,,,,,
+The safety settings in the configuration wont let me change certain settings? Why not?,"If the safety settings are not letting you change them, there is likely a safety password previous set. Once you enter the password and press ""Unlock"" the settings should be accessible. ",,,,,,,,,,,,,,,,,,,,,,
+How do I set the admin password?,"Go to the settings, tap ""admin"" under ""password"", enter ""easybot"" into the ""Current Password"" option. Enter the new password under ""new password"" and ""confirm new password"". Then tap Apply to confirm the change/set.",,,,,,,,,,,,,,,,,,,,,,
+What network protocols for real-time control does the robot accept?,"MODBUS, Ethernet/IP, PROFINET, and PROFIsafe",,,,,,,,,,,,,,,,,,,,,,
+"My robot is close to a collision and if I restart it, it may cause another collision from the vibrations. What can I do?","You can use backdrive. In backdrive manual mode, you can use force to move specific joints to a desired position without releasing all brakes in the arm.",,,,,,,,,,,,,,,,,,,,,,
+Is it ok to use any type of packaging to move the arm if I want to transport it?,"No, not using the original packaging when transporting the arm will void the warranty. If you want to transport the robot please follow the standard procedure for doing so and use the original packing the arm came in.",,,,,,,,,,,,,,,,,,,,,,
+"I used to use an old robot arm, which I had to constantly test the stopping performance for every use, do I have to do that with this arm?","No. So long as you have the stop distance safety functions used, the robot arm will do continuous monitoring of its own stopping performance and will enter recovery mode if it fails during monitoring.",,,,,,,,,,,,,,,,,,,,,,
+How do I clean the machine?,"Prepare the surface by removing loose dirt or debris. Apply a cleaning agent to the surface that needs cleaning, agitater the agent for stubborn spots, let the agent rest on the surface for 5 minutes, rinse the system with water, and leave the machine out to air dry, or dry using towels.",,,,,,,,,,,,,,,,,,,,,,
+Can I use bleach as a cleaning agent? What should I use instead?,"You should not use bleach as a cleaning solution for this arm. The recommended agents you can use include water, 70% isopropyl alcohol, 10% ethanol alcohol, and 10% naphtha to remove grease.",,,,,,,,,,,,,,,,,,,,,,
+I got some grease on my arm while cleaning. Is that ok?,"No, grease is an irritant and can cause an allergic reaction. Wash the area with water and a mild cleaning agent to reduce risk of a reaction.",,,,,,,,,,,,,,,,,,,,,,
+How do I power down the robot arm?,"Press the power button on the TP to turn off the robot, then unplug the power cord from the wall socket and give it 30 seconds to discharge any stored energy.",,,,,,,,,,,,,,,,,,,,,,
+I dropped some liquid on my robot arm. Will that break it or cause a safety issue?,"It has the potential for a break or safety issue. To reduce risk you should stop the machine properly and verify no liquid was in contact with the control box especially. Otherwise, dry the machine after it has cooled.",,,,,,,,,,,,,,,,,,,,,,
+How do I lock the X axis from rotating on the arm when in freedrive mode?,"On the freedrive pane, there are toggles to lock X, Y, Z, and RX, RY, and RZ axes. To lock the rotational X axis you should toggle off the RX option.",,,,,,,,,,,,,,,,,,,,,,
+What does the symbol with 3 arrowed lines emerging from the center of the icon mean?,"This is a icon used for the translation control mode, meaning movement is allowed through all axes, except rotational.",,,,,,,,,,,,,,,,,,,,,,
+What should I do to avoid a pinching hazard?,"Remove obstacles in the area around the robot. Set up stricter safety planes and joint limits, and check the recommended special needs for your robot arm. ",,,,,,,,,,,,,,,,,,,,,,
+How much space do I need to leave around the control box?,"For the UR5e model, the minimum clearance is 50mm on each side. The recommended is 200mm. ",,,,,,,,,,,,,,,,,,,,,,
+What are the external connection ports on the robot?,"Teach Pendant Port, SD Card slot, Ethernet, USB 2.0 and USB 3.0, Mini Displayport, 10A Mini Blade Fuse",,,,,,,,,,,,,,,,,,,,,,
+"What is the meaning of the ""yellow with red text"" color scheme of the electrical interface groups inside the control box?",The yellow with red text color indicates that that group is related to dedicated safety signals.,,,,,,,,,,,,,,,,,,,,,,
+What are the safety limits when in recovery mode?,"The current safety limits will be listed and set in the safety settings. If no safety limits have been changed, the default safety limits are as follows:
+Join Speed Limit: 30 degrees per second.
+Speed Limit: 250 mm/s. 
+Force Limit: 100N. 
+Momentum Limit: 10 kg m/s. 
+Power Limit: 80W.",,,,,,,,,,,,,,,,,,,,,,
+How do I ensure the robot elbow and tool remain within a certain area/boundary?,You can configure Safety Planes. Safety planes limit the tool spheres and elbow movement to stay within certain confines set up by up to 8 safety planes.,,,,,,,,,,,,,,,,,,,,,,
+What risks do I need to be aware of for the safety planes?,"Safety planes only limit the tool and elbow, but not the overall arm. Part of the arm can still exceed the plane, only the elbow and tool are restricted. If the tool must move in a certain way, parts of the arm can still go outside the safety plane. ",,,,,,,,,,,,,,,,,,,,,,
+What are the limitations of using safety planes?,Safety planes can only limit the tool and the elbow from going beyond the plane. Other parts of the arm cannot be configured to respect safety planes.,,,,,,,,,,,,,,,,,,,,,,
+Can I skip setting a password for the safety settings?,No. Failure to set a password can result in injury or death due to unauthorized changes to the configuration system by any user.,,,,,,,,,,,,,,,,,,,,,,
+What could happen if I fail to do an application risk assessment?,"Failure to conduct a risk assessment can increase the risk involved in using the machine. The assessment addresses severity of possible harm, likelihood of occurrence, and avoiding hazardous situations. Failure to take these risks into account can be dangerous.",,,,,,,,,,,,,,,,,,,,,,
+Who should perform the risk assessment for the arm?,Risk assessment is the responsibility of the integrator. The user of the robot arm can be the integrator.,,,,,,,,,,,,,,,,,,,,,,
+Why is the robot arm moving slowly or stopping when I start it? It is not near anything and I have done a risk assessment.,"The robot arm running slowly when started could be due to many potential things.
+The speed settings could be turned down.
+The environment temperature could be too low or high. Temperatures outside of 0-50C can reduce the speed. 
+The robot could be in reduced mode, which can occur when the arm reaches outside it's specified reduced mode safety planes.",,,,,,,,,,,,,,,,,,,,,,
+Why does my robot arm look to be vibrating when running?,This could be due to the dimensionsing of the stand used. If the resonance frequency of the stand is lower than 45Hz it can resonate with the movement of the arm and make it look like the entire  system is vibrating.,,,,,,,,,,,,,,,,,,,,,,
+How can I reduce the force applied to the operator in case of a collision?,"To reduce the force applied to the operator in a collision you can change the force and power limiting safety setting. They are used to reduce clamping and pressures exerted by the robot in case of collisions. 
+The momentum limiting option can also be used to reduce high transient energy and impact forces in case of collisions by reducing the speed of the robot. There is also a speed limitation, which is used to ensure the speed of the robot is within limits set.",,,,,,,,,,,,,,,,,,,,,,
+Do I need to worry about a strong electromagnet near my robot?,"Yes, operating the arm near strong magnetic fields can damage the robot.",,,,,,,,,,,,,,,,,,,,,,
+Why do I need to set the center of gravity for the payload?,"Failure to configure the center of gravity correctly can result in certain procedures failing, such as freedrive. If the center of gravity is not set up correctly it could result in the arm falling on its own.",,,,,,,,,,,,,,,,,,,,,,
+What happens if I offset the center of gravity?,"The offset for the center of gravity can affect the way the arm moves due to what it expects the object's center to be.
+The greater the center of gravity is offset from the origin, the more the capacity of the arm to accelerate can be reduced. 
+Too great of a center of gravity, or too much weight can result in tipping hazards.",,,,,,,,,,,,,,,,,,,,,,
+Why do I need to conduct a cybersecurity risk assessment?,"To identify threats, define trust zones and conduits, and specify the requirements of each component in the application.",,,,,,,,,,,,,,,,,,,,,,
+Who should do the cybersecurity risk assessment?,Either the integrator(could be user) or a competent qualified personnel. ,,,,,,,,,,,,,,,,,,,,,,
+Are there risks associated with using 12V vs 24V?,"Using one or the other is fine so long as the setting matches. Using one, and marking to robot to use the other can be a risk.",,,,,,,,,,,,,,,,,,,,,,
+"My robot arm stopped moving and then had a strong, sudden movement. What could have caused this? How can I prevent this from happening again?","This is likely a ""singularity."" A singularity is a pose that restricts the motion and ability to position the robot. If the arm is approaching a singularity it can stop moving or have very sudden and fast movements. This is likely an artifact of the program that is running. To prevent a singularity from occurring, avoid programming motions that result in any poses that could cause a singularity. ",,,,,,,,,,,,,,,,,,,,,,
+Can you describe the robot stop categories?,"There are three kinds of stop categories.
+Stop Category 0: Immediately stops the arm by removing the power.
+Stop Category 1: Stops the robot in a controlled manner, and removes the power once it is fully stopped.
+Stop Category 2: Stops the robot with power available to the drives, while maintaining the current trajectory. Power is maintained after the robot is stopped.",,,,,,,,,,,,,,,,,,,,,,
+"I plugged in an active adapter, but nothing is showing up. What should I do?","You must ensure that the adapter is fully plugged in, and plugged in before powering on the control box. Adapters that do not support revision 1.2 are not garunteed to work. Please check that the adapter adheres to these requirements.",,,,,,,,,,,,,,,,,,,,,,
+Can I connect or disconnect my teach pendant while the control box is on?,No. Connecting or disconnecting the teach pendant should be done when the control box is powered off. Connecting or disconnecting while the control box is on can cause damage to the control box.,,,,,,,,,,,,,,,,,,,,,,
+What are the two yellow buttons on the back side of my teach pendant?,Those are the 3PE buttons. ,,,,,,,,,,,,,,,,,,,,,,
+What is the function of the 3PE buttons?,"When the 3PE button is not pressed, the robot movement is stopped, power is not removed from the robot arm, and the brakes are release. When there is light pressure the current program can play while the mode is set to manual. When there is tight pressure the robot movement is stopped in manual mode, and the robot is in 3PE stop mode. If you light press it twice and hold the button down,  you can enter fredrive mode and manually move the arm to a desired position while the buttons light pressure is held down. ",,,,,,,,,,,,,,,,,,,,,,
+What happens if the robot detects a mismatch between mounting configuration and sensor data during first boot?,If a mismatch is found between the mounting and the sensor data with a tolerance of 30 degrees the start button is disabled and an error message is displayed below it. ,,,,,,,,,,,,,,,,,,,,,,
+How do I power up the control box?,"Press the power button on the teach pendant. If it is the first boot, you may see a ""Getting Started"" screen. ",,,,,,,,,,,,,,,,,,,,,,
+What is the latency of messages sent via tool connectors?,"2ms - 4ms, from the time the message is written on the PC to the start of the message on the RS485.",,,,,,,,,,,,,,,,,,,,,,
+What check procedures do I need to follow after modifying the robot arm?,"Yes, there is a list of tests to conduct after making a modification to the robot arm. 
+Verify all safety inputs and outputs are correctly connected.
+Test all connected safety input and output, including devices common to multiple
+machines or robots, are functioning as intended.
+Test emergency stop buttons and inputs to verify the robot stops and the brakes engage.
+Test safeguard inputs to verify the robot motion stops. If safeguard reset is configured,
+check that it functions as intended.
+Look at the initialization screen, activate the reduced input and verify the screen changes.
+Change the operational mode to verify the mode icon changes in top right corner of
+PolyScope screen.
+Test the 3-position enabling device to verify that pressing to the center on position enables
+motion in manual mode at a reduced speed.
+If the Emergency Stop outputs are used, press the Emergency Stop push-button and
+verify that there is a stop of the whole system.
+Test the system connected to Robot Moving output, Robot Not Stopping output, Reduced
+Mode output, or Not Reduced Mode output to verify the output changes are detected.
+Determine the commissioning requirements of your robot application.",,,,,,,,,,,,,,,,,,,,,,
+What are the main safety precautions that should be taken before performing maintenance on a Universal Robot Arm?,"Disconnect main power, discharge control box, observe ESD regulations, and prevent dust/water ingress.",,,,,,,,,,,,,,,,,,,,,,
+What can happen if you open the control box power supply too soon after switching off?,It can cause injury from residual high voltage (up to 600 V) still present in the power supply.,,,,,,,,,,,,,,,,,,,,,,
+What are the tool attachments I can put on the universal robot relating to moving objects with the arm?,"Many kinds of grippers such as parallel, three-finger, vacuum, magnetic, soft, and precision grippers. ",,,,,,,,,,,,,,,,,,,,,,
+What are the tool attachments I can put on the universal robot relating to welding?,Welding and arc welding attatchments.,,,,,,,,,,,,,,,,,,,,,,
+How should the earth (ground) connection be checked after maintenance?,Verify the PE grounding screw connection inside the control box before re-powering.,,,,,,,,,,,,,,,,,,,,,,
+What is Reduced Mode? When is it used?,"Reduced Mode activates lower limits for speed, force, and distance near safety zones or planes.",,,,,,,,,,,,,,,,,,,,,,
+What are the four collaborative operation techniques defined in ISO 10218-1?,"Safety-rated monitored stop, hand guiding, speed & separation monitoring, power & force limiting.",,,,,,,,,,,,,,,,,,,,,,
+I want to control the arm using either admittance or impedance control schemes by reading joint positions/torques and commanding joint velocities/torques at a high rate. Can this be implemented using the standard hardware and controller?,"Yes, admittance and impendance control schemes can be implemented using standard and controler, but it would require a controller with direct torque control or low-level research API to command the velocities the fastest rate for UR robots is 125 Hz",,,,,,,,,,,,,,,,,,,,,,
+What is a pinch hazard in robot operation?,A pinch hazard occurs when body parts can be caught between moving robot parts or surfaces.,,,,,,,,,,,,,,,,,,,,,,
+"What is the risk of EMC interference, and how can it be avoided?",High electromagnetic fields can cause malfunction; avoid long cables and maintain grounding.,,,,,,,,,,,,,,,,,,,,,,
+What standard defines the performance levels of UR safety functions?,"EN ISO 13849-1, Performance Level d (PLd), Category 3.",,,,,,,,,,,,,,,,,,,,,,
+What are the steps for moving the robot arm safely to check its position stability?,"Move to zero position, disconnect power, inspect cables and bolts, use Freedrive to test hold.",,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,
